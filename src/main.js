@@ -98,9 +98,19 @@ function checkCollisions() {
                 scene.remove(bulletHelper);
                 bullets.splice(bulletIndex, 1);
 
-                scene.remove(target);
-                scene.remove(targetHelper);
-                targets.splice(targetIndex, 1);
+                // scene.remove(target);
+                // scene.remove(targetHelper);
+                // targets.splice(targetIndex, 1);
+
+                // Change target's colour
+                target.material.color.set(`#${Math.floor(Math.random() * 0xffffff)
+            .toString(16)
+            .padStart(6, '0')}`);
+
+                // // Revert colour after 500ms
+                // setTimeout(() => {
+                //     target.material.color.set(0x00ff00); // Revert to green
+                // }, 500);
 
                 // Update Score
                 score += 10;
