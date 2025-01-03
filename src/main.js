@@ -93,7 +93,7 @@ function checkCollisions() {
             if (bulletBoundingBox.intersectsBox(targetBoundingBox)) {
                 console.log('Collision detected!');
 
-                // Handle collision: Remove objects
+                // Handle collision: Remove bullets
                 scene.remove(bullet);
                 scene.remove(bulletHelper);
                 bullets.splice(bulletIndex, 1);
