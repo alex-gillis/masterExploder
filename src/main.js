@@ -104,8 +104,8 @@ function checkCollisions() {
 
                 // Change target's colour
                 target.material.color.set(`#${Math.floor(Math.random() * 0xffffff)
-            .toString(16)
-            .padStart(6, '0')}`);
+                                        .toString(16)
+                                        .padStart(6, '0')}`);
 
                 // // Revert colour after 500ms
                 // setTimeout(() => {
