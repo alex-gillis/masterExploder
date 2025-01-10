@@ -65,7 +65,7 @@ export function checkCollisions(
 
                 lastHitTime = currentTime; // Update last hit time
 
-                if (health.value <= 0) {
+                if (health.value === 0) {
                     gameOver(score.value, resetGame);
                 }
             }
