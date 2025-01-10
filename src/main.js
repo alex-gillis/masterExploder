@@ -11,27 +11,30 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
 
-renderer.setSize(window.innerWidth - 20, window.innerHeight - 32);
+renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
+
+const gameRunning = { value: true }; // Track if the game is running
 
 const DEBUG_MODE = false;
 const bullets = [];
-const enemyBullets = []; // Bullets fired by targets
+const enemyBullets = [];
 const targets = [];
+const keys = {}; 
 
 // Initialize HUD
 const { scoreElement, healthElement } = createHUD();
 const score = { value: 0 }; 
 const health = { value: 3 }; 
 
-// ship stats
+// Ship Stats
 let fireRate = 300;
 let moveSpeed = 0.1;
 
-// enemy stats
+// Enemy Stats
 let enemyFireRate = 2000; // 2 seconds
 
-// cooldowns
+// Cooldowns
 let lastFired = 0;
 let lastHitTime = 0; 
 
@@ -45,9 +48,6 @@ function resetGame() {
 }
 
 animateTargets(scene, targets, enemyBullets, enemyFireRate);
-
-// Global Variables
-const keys = {}; // Object to track key states
 
 // Track Keyboard Input
 window.addEventListener('keydown', (event) => keys[event.key] = true);
@@ -72,15 +72,15 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-
 function animate() {
+    if (!gameRunning.value) return; // Exit the loop if the game is over
+
     requestAnimationFrame(animate);
 
     moveShip();
     updateBullets(scene, bullets);
     animateTargets(scene, targets, enemyBullets, enemyFireRate);
 
-    // Pass resetGame to checkCollisions
     lastHitTime = checkCollisions(
         scene,
         bullets,
@@ -94,12 +94,12 @@ function animate() {
         scoreElement,
         healthElement,
         lastHitTime,
-        resetGame 
+        resetGame,
+        gameRunning
     );
 
     renderer.render(scene, camera);
 }
-
 
 animate();
 

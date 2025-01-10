@@ -1,5 +1,6 @@
-export function gameOver(score, resetGame) {
-    // Create Game Over Screen
+export function gameOver(score, resetGame, gameRunningRef) {
+    gameRunningRef.value = false; // Set gameRunning to false
+
     const gameOverScreen = document.createElement('div');
     gameOverScreen.style.position = 'absolute';
     gameOverScreen.style.top = '50%';
@@ -15,8 +16,7 @@ export function gameOver(score, resetGame) {
     `;
     document.body.appendChild(gameOverScreen);
 
-    // Add Restart Button Logic
     document.getElementById('restart').addEventListener('click', () => {
-        resetGame(); // Call the reset game function
+        resetGame(); // Call the reset function
     });
 }

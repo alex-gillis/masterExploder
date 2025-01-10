@@ -13,7 +13,8 @@ export function checkCollisions(
     scoreElement,
     healthElement,
     lastHitTime,
-    resetGame
+    resetGame,
+    gameRunning 
 ) {
     // Bullet collisions with targets
     bullets.forEach((bulletObj, bulletIndex) => {
@@ -66,8 +67,8 @@ export function checkCollisions(
                 lastHitTime = currentTime; // Update last hit time
 
                 if (health.value === 0) {
-                    gameOver(score.value, resetGame);
-                }
+                    gameOver(score.value, resetGame, gameRunning); // Pass gameRunning here
+                }                
             }
         }
     });
