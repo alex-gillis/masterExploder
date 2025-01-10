@@ -1,7 +1,10 @@
 import * as THREE from 'three';
 import { createShip } from './components/Ship.js';
-import { createTarget } from './components/Targets.js';
+import { createTarget, animateTargets } from './components/Targets.js';
 import { shootBullet, updateBullets } from './components/Bullets.js';
+import { createHUD, updateHUD } from './components/HUD.js';
+import { gameOver } from './components/GameOver.js';
+import { checkCollisions } from './components/Collisions.js';
 
 // Scene, Camera, Renderer Setup
 const scene = new THREE.Scene();
@@ -13,85 +16,91 @@ document.body.appendChild(renderer.domElement);
 
 const DEBUG_MODE = false;
 const bullets = [];
+const enemyBullets = []; // Bullets fired by targets
 const targets = [];
-let score = 0;
 
-const scoreElement = document.createElement('div');
-scoreElement.style.position = 'absolute';
-scoreElement.style.top = '10px';
-scoreElement.style.left = '10px';
-scoreElement.style.color = 'white';
-scoreElement.style.fontSize = '20px';
-scoreElement.textContent = `Score: ${score}`;
-document.body.appendChild(scoreElement);
+// Initialize HUD
+const { scoreElement, healthElement } = createHUD();
+const score = { value: 0 }; 
+const health = { value: 3 }; 
+
+// ship stats
+let fireRate = 300;
+let moveSpeed = 0.1;
+
+// enemy stats
+let enemyFireRate = 2000; // 2 seconds
+
+// cooldowns
+let lastFired = 0;
+let lastHitTime = 0; 
 
 const ship = createShip(scene);
 createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE);
 createTarget(scene, targets, new THREE.Vector3(-2, 3, 0), DEBUG_MODE);
 createTarget(scene, targets, new THREE.Vector3(0, 4, 0), DEBUG_MODE);
 
-function checkCollisions() {
-    bullets.forEach((bulletObj, bulletIndex) => {
-        const { bullet, boundingBox: bulletBoundingBox, helper: bulletHelper } = bulletObj;
-        bulletBoundingBox.setFromObject(bullet);
-        bulletHelper.update();
-
-        targets.forEach((targetObj, targetIndex) => {
-            const { target, boundingBox: targetBoundingBox, helper: targetHelper } = targetObj;
-            targetBoundingBox.setFromObject(target);
-            targetHelper.update();
-
-            if (bulletBoundingBox.intersectsBox(targetBoundingBox)) {
-                scene.remove(bullet);
-                scene.remove(bulletHelper);
-                bullets.splice(bulletIndex, 1);
-
-                target.material.color.set(`#${Math.floor(Math.random() * 0xffffff)
-                                        .toString(16)
-                                        .padStart(6, '0')}`);
-                score += 10;
-                scoreElement.textContent = `Score: ${score}`;
-            }
-        });
-    });
+function resetGame() {
+    window.location.href = window.location.href;
 }
 
-const keys = {};
+animateTargets(scene, targets, enemyBullets, enemyFireRate);
+
+// Global Variables
+const keys = {}; // Object to track key states
+
+// Track Keyboard Input
 window.addEventListener('keydown', (event) => keys[event.key] = true);
 window.addEventListener('keyup', (event) => keys[event.key] = false);
 
+// Move Ship Function
 function moveShip() {
-    const speed = 0.1;
+    if (keys['ArrowLeft']) ship.position.x -= moveSpeed;
+    if (keys['ArrowRight']) ship.position.x += moveSpeed;
 
-    if (keys['ArrowLeft']) ship.position.x -= speed;
-    if (keys['ArrowRight']) ship.position.x += speed;
-
+    // Clamp ship position within screen bounds
     ship.position.x = THREE.MathUtils.clamp(ship.position.x, -10, 10);
 }
 
-function animateTargets() {
-    targets.forEach((targetObj) => {
-        const { target } = targetObj;
-        target.position.x += Math.sin(Date.now() * 0.001) * 0.01;
-    });
-}
+window.addEventListener('keydown', (event) => {
+    if (event.key === ' ') {
+        const currentTime = Date.now();
+        if (currentTime - lastFired >= fireRate) {
+            shootBullet(scene, bullets, ship, DEBUG_MODE);
+            lastFired = currentTime;
+        }
+    }
+});
+
 
 function animate() {
     requestAnimationFrame(animate);
 
     moveShip();
     updateBullets(scene, bullets);
-    animateTargets();
-    checkCollisions();
+    animateTargets(scene, targets, enemyBullets, enemyFireRate);
+
+    // Pass resetGame to checkCollisions
+    lastHitTime = checkCollisions(
+        scene,
+        bullets,
+        enemyBullets,
+        targets,
+        ship,
+        score,
+        health,
+        updateHUD,
+        gameOver,
+        scoreElement,
+        healthElement,
+        lastHitTime,
+        resetGame 
+    );
 
     renderer.render(scene, camera);
 }
-animate();
 
-window.addEventListener('keydown', (event) => {
-    if (event.key === ' ') {
-        shootBullet(scene, bullets, ship, DEBUG_MODE);
-    }
-});
+
+animate();
 
 camera.position.z = 10;
