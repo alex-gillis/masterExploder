@@ -1,10 +1,10 @@
 import * as THREE from 'three';
-import { createShip } from './components/Ship.js';
-import { createTarget, animateTargets } from './components/Targets.js';
-import { shootBullet, updateBullets } from './components/Bullets.js';
-import { createHUD, updateHUD } from './components/HUD.js';
-import { gameOver } from './components/GameOver.js';
-import { checkCollisions } from './components/Collisions.js';
+import { createShip } from './components/entities/player/Ship.js';
+import { createTarget, animateTargets } from './components/entities/enemies/Targets.js';
+import { shootBullet, updateBullets } from './components/entities/misc/Bullets.js';
+import { createHUD, updateHUD } from './components/menus/HUD.js';
+import { gameOver } from './components/menus/GameOver.js';
+import { checkCollisions } from './components/entities/misc/Collisions.js';
 
 // Scene, Camera, Renderer Setup
 const scene = new THREE.Scene();
@@ -39,9 +39,10 @@ let lastFired = 0;
 let lastHitTime = 0; 
 
 const ship = createShip(scene);
-createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE);
-createTarget(scene, targets, new THREE.Vector3(-2, 3, 0), DEBUG_MODE);
-createTarget(scene, targets, new THREE.Vector3(0, 4, 0), DEBUG_MODE);
+createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE, 'oscillate');
+createTarget(scene, targets, new THREE.Vector3(-2, 0, 0), DEBUG_MODE, 'zigzag');
+createTarget(scene, targets, new THREE.Vector3(0, 5 , 0), DEBUG_MODE, 'circular');
+
 
 function resetGame() {
     window.location.href = window.location.href;
@@ -73,7 +74,7 @@ window.addEventListener('keydown', (event) => {
 });
 
 function animate() {
-    if (!gameRunning.value) return; // Exit the loop if the game is over
+    if (!gameRunning.value) return; 
 
     requestAnimationFrame(animate);
 
