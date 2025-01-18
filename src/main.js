@@ -5,6 +5,11 @@ import { shootBullet, updateBullets } from './components/entities/misc/Bullets.j
 import { createHUD, updateHUD } from './components/menus/HUD.js';
 import { gameOver } from './components/menus/GameOver.js';
 import { checkCollisions } from './components/entities/misc/Collisions.js';
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = 'https://ikvmctpberzquhmcqofh.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 // Scene, Camera, Renderer Setup
 const scene = new THREE.Scene();
