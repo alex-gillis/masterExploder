@@ -1,40 +1,54 @@
-async function registerUser(name, email, password) {
-    // Step 1: Register with Supabase Auth
-    const { user, error } = await supabase.auth.signUp({
-        email,
-        password,
-    });
+import { supabase } from './Supabase.js';
 
-    if (error) {
-        console.error('Error during registration:', error.message);
+export async function registerUser(email, password) {
+    try {
+        const { user, error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+
+        console.log('User registered successfully:', user);
+        return user;
+    } catch (err) {
+        console.error('Registration failed:', err.message);
         return null;
     }
-
-    // Step 2: Add additional fields to the users table
-    const { data, error: insertError } = await supabase
-        .from('users')
-        .insert([{ id: user.id, name, email, highscore: 0, role: 'player' }]);
-
-    if (insertError) {
-        console.error('Error inserting user data:', insertError.message);
-        return null;
-    }
-
-    console.log('User registered successfully:', data);
-    return data;
 }
 
-async function loginUser(email, password) {
-    const { user, error } = await supabase.auth.signIn({
-        email,
-        password,
-    });
+
+export async function loginUser(email, password) {
+    try {
+        const { user, error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) throw error;
+
+        console.log('User logged in successfully:', user);
+        return user;
+    } catch (err) {
+        console.error('Login failed:', err.message);
+        return null;
+    }
+}
+
+export async function logoutUser() {
+    try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+
+        console.log('User logged out successfully');
+    } catch (err) {
+        console.error('Logout failed:', err.message);
+    }
+}
+
+export async function getCurrentUser() {
+    const { data: { user }, error } = await supabase.auth.getUser();
 
     if (error) {
-        console.error('Error during login:', error.message);
+        console.error('Error fetching current user:', error.message);
         return null;
     }
 
-    console.log('User logged in successfully:', user);
+    console.log('Current user:', user);
     return user;
 }
