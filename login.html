@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="login">Login</button>
+    <p id="status"></p>
+
+    <p>Don't have an account? <a href="./register.html">Register here</a></p>
+
+    <script type="module">
+        import { loginUser } from './src/components/supabase/Users.js';
+
+        document.getElementById('login').addEventListener('click', async () => {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const user = await loginUser(email, password);
+            const status = document.getElementById('status');
+
+            if (user) {
+                status.textContent = 'Login successful!';
+                setTimeout(() => (window.location.href = './index.html'), 2000); // Redirect to game
+            } else {
+                status.textContent = 'Login failed. Please try again.';
+            }
+        });
+    </script>
+</body>
+</html>
