@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <h1>Register</h1>
@@ -16,19 +18,19 @@
 
     <script type="module">
         import { registerUser } from './src/components/supabase/Users.js';
-
+    
         document.getElementById('register').addEventListener('click', async () => {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-
+    
             const user = await registerUser(email, password);
             const status = document.getElementById('status');
-
+    
             if (user) {
                 status.textContent = 'Registration successful!';
                 setTimeout(() => (window.location.href = './login.html'), 2000); // Redirect to login
             } else {
-                status.textContent = 'Registration failed. Try again.';
+                status.textContent = 'Registration failed. Please check the console for details.';
             }
         });
     </script>

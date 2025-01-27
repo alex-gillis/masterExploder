@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <h1>Login</h1>
@@ -26,11 +28,12 @@
 
             if (user) {
                 status.textContent = 'Login successful!';
-                setTimeout(() => (window.location.href = './index.html'), 2000); // Redirect to game
+                setTimeout(() => (window.location.href = './index.html'), 2000); // Redirect to the game
             } else {
-                status.textContent = 'Login failed. Please try again.';
+                status.textContent = 'Login failed: Invalid email or password.';
             }
         });
+
     </script>
 </body>
 </html>

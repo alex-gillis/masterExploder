@@ -2,11 +2,15 @@ import { supabase } from './Supabase.js';
 
 export async function registerUser(email, password) {
     try {
-        const { user, error } = await supabase.auth.signUp({ email, password });
+        const { data, error } = await supabase.auth.signUp({ 
+            email, 
+            password 
+        });
+
+        console.log('Supabase response:', data); // Debug the response
         if (error) throw error;
 
-        console.log('User registered successfully:', user);
-        return user;
+        return data.user;
     } catch (err) {
         console.error('Registration failed:', err.message);
         return null;
@@ -16,14 +20,25 @@ export async function registerUser(email, password) {
 
 export async function loginUser(email, password) {
     try {
-        const { user, error } = await supabase.auth.signInWithPassword({
+        console.log('Logging in with:', { email, password });
+
+        const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
         });
-        if (error) throw error;
 
-        console.log('User logged in successfully:', user);
-        return user;
+        console.log('Supabase response:', data); // Debug response
+
+        if (error) {
+            console.error('Login failed:', error.message);
+            throw error; // Re-throw for external error handling
+        }
+
+        if (!data.session) {
+            console.warn('Session not created. Check email confirmation or settings.');
+        }
+
+        return data.user;
     } catch (err) {
         console.error('Login failed:', err.message);
         return null;
