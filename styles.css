@@ -3,7 +3,7 @@ body {
     color: silver;
 }
 
-#logout {
+#menu-buttons {
     position: absolute;
     top: 15px;  
     right: 15px;

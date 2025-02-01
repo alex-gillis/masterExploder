@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.47.16",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",
     "three": "^0.171.0"
   },

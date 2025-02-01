@@ -1,44 +1,53 @@
 import { supabase } from './Supabase.js';
+import bcrypt from 'bcryptjs';
 
-export async function registerUser(email, password) {
+export async function registerUser(username, password) {
     try {
-        const { data, error } = await supabase.auth.signUp({ 
-            email, 
-            password 
-        });
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(password, salt);
 
-        console.log('Supabase response:', data); // Debug the response
+        // Insert into `users` table
+        const { data, error } = await supabase
+            .from('users')
+            .insert([{ name: username, password: hashedPassword, highscore: 0, admin: false }])
+            .select('id')
+            .single(); // Ensure we get back the `id`
+
         if (error) throw error;
 
-        return data.user;
+        console.log('User registered successfully:', data);
+        return data.id; // Return user ID
     } catch (err) {
         console.error('Registration failed:', err.message);
         return null;
     }
 }
 
-
-export async function loginUser(email, password) {
+export async function loginUser(username, password) {
     try {
-        console.log('Logging in with:', { email, password });
+        console.log('Logging in with username:', username);
 
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        // Fetch user by username
+        const { data, error } = await supabase
+            .from('users')
+            .select('id, name, password, highscore, admin')
+            .eq('name', username)
+            .single();
 
-        console.log('Supabase response:', data); // Debug response
-
-        if (error) {
-            console.error('Login failed:', error.message);
-            throw error; // Re-throw for external error handling
+        if (error || !data) {
+            console.error('Login failed: User not found.');
+            return null;
         }
 
-        if (!data.session) {
-            console.warn('Session not created. Check email confirmation or settings.');
+        // Compare provided password with stored hash
+        const validPassword = bcrypt.compareSync(password, data.password);
+        if (!validPassword) {
+            console.error('Login failed: Incorrect password.');
+            return null;
         }
 
-        return data.user;
+        console.log('User logged in:', data);
+        return { id: data.id, username: data.name, highscore: data.highscore, admin: data.admin };
     } catch (err) {
         console.error('Login failed:', err.message);
         return null;
@@ -66,4 +75,37 @@ export async function getCurrentUser() {
 
     console.log('Current user:', user);
     return user;
+}
+
+export async function updateHighScore(userId, newScore) {
+    try {
+        // Fetch the user's current high score
+        const { data: userData, error: fetchError } = await supabase
+            .from('users')
+            .select('highscore')
+            .eq('id', userId)
+            .single();
+
+        if (fetchError) throw fetchError;
+
+        const currentHighScore = userData ? userData.highscore : 0;
+
+        if (newScore > currentHighScore) {
+            const { data, error } = await supabase
+                .from('users')
+                .update({ highscore: newScore })
+                .eq('id', userId);
+
+            if (error) throw error;
+
+            console.log(`High score updated: ${newScore}`);
+            return data;
+        } else {
+            console.log('New score is lower than current high score. No update needed.');
+            return null;
+        }
+    } catch (err) {
+        console.error('Failed to update high score:', err.message);
+        return null;
+    }
 }

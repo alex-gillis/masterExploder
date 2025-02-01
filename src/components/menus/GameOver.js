@@ -1,20 +1,19 @@
-import { updateHighScore, getUserHighScore } from '../supabase/Highscore.js';
+import { updateHighScore } from '../supabase/Users.js';
 
 export async function gameOver(score, resetGame, gameRunningRef, userId) {
     gameRunningRef.value = false; // Stop the game loop
 
-    let highScore = score;
+    if (!userId) {
+        console.error('User ID is missing. Cannot save high score.');
+        return;
+    }
 
-    // Fetch and update the high score
-    if (userId) {
-        const currentHighScore = await getUserHighScore(userId);
-        highScore = Math.max(score, currentHighScore);
-
-        if (score > currentHighScore) {
-            await updateHighScore(userId, score);
-        }
-    } else {
-        console.warn('User is not logged in. High score will not be saved.');
+    try {
+        // Update high score if applicable
+        await updateHighScore(userId, score);
+    } catch (error) {
+        console.error('Error updating high score:', error.message);
+        return;
     }
 
     // Display the Game Over Menu
@@ -28,17 +27,22 @@ export async function gameOver(score, resetGame, gameRunningRef, userId) {
     gameOverScreen.style.textAlign = 'center';
 
     gameOverScreen.innerHTML = `
-        Game Over!<br>
-        Score: ${score}<br>
-        High Score: ${highScore}<br>
+        <h1>Game Over</h1>
+        <p>Score: ${score}</p>
         <button id="restart">Restart</button>
+        <button id="leaderboard">View Leaderboard</button>
     `;
     document.body.appendChild(gameOverScreen);
 
     document.getElementById('restart').addEventListener('click', () => {
         resetGame();
     });
+
+    document.getElementById('leaderboard').addEventListener('click', () => {
+        window.location.href = './leaderboard.html';
+    });
 }
+
 
 // export async function gameOver(score, resetGame, gameRunningRef, userId) {
 //     gameRunningRef.value = false; // Stop the game loop

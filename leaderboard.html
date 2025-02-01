@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <h1>Leaderboard</h1>
+    <button id="back-to-menu">Back to Menu</button>
+    <ul id="leaderboard"></ul>
+
+    <script type="module">
+        import { getLeaderboard } from './src/components/supabase/Leaderboard.js';
+
+        async function displayLeaderboard() {
+            const leaderboardData = await getLeaderboard();
+            const leaderboardList = document.getElementById('leaderboard');
+
+            leaderboardList.innerHTML = ''; // Clear existing entries
+
+            leaderboardData.forEach((user, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
+                leaderboardList.appendChild(listItem);
+            });
+        }
+
+        displayLeaderboard();
+
+        document.getElementById('back-to-menu').addEventListener('click', () => {
+            window.location.href = './index.html'; // Change to your main menu file
+        });
+    </script>
+</body>
+</html>
