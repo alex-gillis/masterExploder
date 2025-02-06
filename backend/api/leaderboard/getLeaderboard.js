@@ -1,6 +1,8 @@
-import { supabase } from './Supabase.js';
+const express = require('express');
+const router = express.Router();
+const supabase = require('../../config');
 
-export async function getLeaderboard() {
+router.get('/get-leaderboard', async (req, res) => {
     try {
         // Get the top 10 players sorted by high score
         const { data, error } = await supabase
@@ -11,10 +13,11 @@ export async function getLeaderboard() {
 
         if (error) throw error;
 
-        console.log('Leaderboard:', data);
-        return data;
+        res.status(200).json({ leaderboard: data });
     } catch (err) {
         console.error('Failed to fetch leaderboard:', err.message);
-        return [];
+        res.status(500).json({ error: err.message });
     }
-}
+});
+
+module.exports = router;

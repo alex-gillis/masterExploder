@@ -1,12 +1,14 @@
-import { supabase } from './Supabase.js';
+const express = require('express');
+const router = express.Router();
 
-export async function logoutUser() {
+router.post('/logout-user', async (req, res) => {
     try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-
         console.log('User logged out successfully');
+        res.json({ message: 'User logged out' });
     } catch (err) {
         console.error('Logout failed:', err.message);
+        res.status(500).json({ error: err.message });
     }
-}
+});
+
+module.exports = router;

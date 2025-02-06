@@ -1,8 +1,16 @@
-import { supabase } from './Supabase.js';
-import bcrypt from 'bcryptjs';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const router = express.Router();
+const supabase = require('../../config');
 
-export async function registerUser(username, password) {
+router.post('/register-user', async (req, res) => {
     try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({ error: 'Username and password required' });
+        }
+
+        // Hash password
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
 
@@ -11,14 +19,16 @@ export async function registerUser(username, password) {
             .from('users')
             .insert([{ name: username, password: hashedPassword, highscore: 0, admin: false }])
             .select('id')
-            .single(); // Ensure we get back the `id`
+            .single();
 
         if (error) throw error;
 
         console.log('User registered successfully:', data);
-        return data.id; // Return user ID
+        res.status(201).json({ userId: data.id, message: 'Registration successful' });
     } catch (err) {
         console.error('Registration failed:', err.message);
-        return null;
+        res.status(500).json({ error: err.message });
     }
-}
+});
+
+module.exports = router;

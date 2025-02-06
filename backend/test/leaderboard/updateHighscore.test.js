@@ -1,34 +1,38 @@
-import { supabase } from './Supabase.js';
+const request = require('supertest');
+const app = require('../../index'); 
 
-export async function updateHighScore(userId, newScore) {
-    try {
-        // Fetch the user's current high score
-        const { data: userData, error: fetchError } = await supabase
-            .from('users')
-            .select('highscore')
-            .eq('id', userId)
-            .single();
+describe('Update High Score API', () => {
+    let userId = null;
 
-        if (fetchError) throw fetchError;
+    beforeAll(async () => {
+        const res = await request(app)
+            .post('/api/register')
+            .send({ username: 'TestPlayer', password: 'password123' });
 
-        const currentHighScore = userData ? userData.highscore : 0;
+        expect(res.statusCode).toBe(201);
+        userId = res.body.userId;
+    });
 
-        if (newScore > currentHighScore) {
-            const { data, error } = await supabase
-                .from('users')
-                .update({ highscore: newScore })
-                .eq('id', userId);
+    test('Update high score with a valid higher score', async () => {
+        const res = await request(app)
+            .post('/api/update-highscore')
+            .send({ userId, newScore: 200 });
 
-            if (error) throw error;
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('message', 'High score updated');
+    });
 
-            console.log(`High score updated: ${newScore}`);
-            return data;
-        } else {
-            console.log('New score is lower than current high score. No update needed.');
-            return null;
-        }
-    } catch (err) {
-        console.error('Failed to update high score:', err.message);
-        return null;
-    }
-}
+    test('Do not update if the new score is lower', async () => {
+        const res = await request(app)
+            .post('/api/update-highscore')
+            .send({ userId, newScore: 100 }); // Lower than 200
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('message', 'No update needed');
+    });
+
+    test('Fail if missing parameters', async () => {
+        const res = await request(app).post('/api/update-highscore').send({});
+        expect(res.statusCode).toBe(400);
+    });
+});

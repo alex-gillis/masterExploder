@@ -1,8 +1,15 @@
-import { supabase } from './Supabase.js';
+const express = require('express');
+const router = express.Router();
+const supabase = require('../../config');
 
-export async function updateHighScore(userId, newScore) {
+router.post('/update-highscore', async (req, res) => {
     try {
-        // Fetch the user's current high score
+        const { userId, newScore } = req.body;
+
+        if (!userId || newScore == null) {
+            return res.status(400).json({ error: 'User ID and score required' });
+        }
+
         const { data: userData, error: fetchError } = await supabase
             .from('users')
             .select('highscore')
@@ -14,21 +21,21 @@ export async function updateHighScore(userId, newScore) {
         const currentHighScore = userData ? userData.highscore : 0;
 
         if (newScore > currentHighScore) {
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('users')
                 .update({ highscore: newScore })
                 .eq('id', userId);
 
             if (error) throw error;
 
-            console.log(`High score updated: ${newScore}`);
-            return data;
+            res.status(200).json({ message: 'High score updated', newScore });
         } else {
-            console.log('New score is lower than current high score. No update needed.');
-            return null;
+            res.status(200).json({ message: 'No update needed', currentHighScore });
         }
     } catch (err) {
         console.error('Failed to update high score:', err.message);
-        return null;
+        res.status(500).json({ error: err.message });
     }
-}
+});
+
+module.exports = router; 

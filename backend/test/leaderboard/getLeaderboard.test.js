@@ -1,20 +1,28 @@
-import { supabase } from './Supabase.js';
+const request = require('supertest');
+const app = require('../../index'); 
 
-export async function getLeaderboard() {
-    try {
-        // Get the top 10 players sorted by high score
-        const { data, error } = await supabase
-            .from('users')
-            .select('name, highscore')
-            .order('highscore', { ascending: false }) // Highest to lowest
-            .limit(10);
+describe('Leaderboard API', () => {
+    test('Fetch top 10 players', async () => {
+        const res = await request(app).get('/api/get-leaderboard');
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('leaderboard');
+        expect(Array.isArray(res.body.leaderboard)).toBe(true);
+    });
 
-        if (error) throw error;
+    test('Handle database error', async () => {
+        jest.spyOn(console, 'error').mockImplementation(() => {}); // Silence errors
 
-        console.log('Leaderboard:', data);
-        return data;
-    } catch (err) {
-        console.error('Failed to fetch leaderboard:', err.message);
-        return [];
-    }
-}
+        const mockSupabase = require('../src/services/supabaseClient');
+        jest.spyOn(mockSupabase, 'from').mockReturnValue({
+            select: jest.fn().mockReturnValue({
+                order: jest.fn().mockReturnValue({
+                    limit: jest.fn().mockRejectedValue(new Error('Database error')),
+                }),
+            }),
+        });
+
+        const res = await request(app).get('/api/get-leaderboard');
+        expect(res.statusCode).toBe(500);
+        expect(res.body).toHaveProperty('error');
+    });
+});
