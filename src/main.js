@@ -42,14 +42,14 @@ const health = { value: 3 };
 
 let gameState = 'menu'; // 'menu', 'playing', 'paused', 'gameOver'
 
-// 🚀 **Ship Stats**
+// **Ship Stats**
 let fireRate = 300;
 let moveSpeed = 0.1;
 
-// 🎯 **Enemy Stats**
+// **Enemy Stats**
 let enemyFireRate = 2000; // 2 seconds
 
-// 🔄 **Cooldowns**
+// **Cooldowns**
 let lastFired = 0;
 let lastHitTime = 0; 
 
@@ -95,7 +95,7 @@ function resetGame() {
 window.addEventListener('keydown', (event) => keys[event.key] = true);
 window.addEventListener('keyup', (event) => keys[event.key] = false);
 
-// 🎮 **Move Ship Function**
+// **Move Ship Function**
 function moveShip() {
     if (keys['ArrowLeft']) ship.position.x -= moveSpeed;
     if (keys['ArrowRight']) ship.position.x += moveSpeed;
