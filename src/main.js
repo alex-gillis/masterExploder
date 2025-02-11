@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import { createShip } from './entities/player/Ship.js';
-import { createTarget, animateTargets } from './entities/enemies/Targets.js';
-import { shootBullet, updateBullets } from './entities/misc/Bullets.js';
-import { createHUD, updateHUD } from './menus/HUD.js';
-import { gameOver } from './menus/GameOver.js';
-import { showMenu } from './menus/Menu.js';
-import { checkCollisions } from './entities/misc/Collisions.js';
-import { updateHighScore } from './supabase/Users.js';
+import { createShip } from './components/entities/player/Ship.js';
+import { createTarget, animateTargets } from './components/entities/enemies/Targets.js';
+import { shootBullet, updateBullets } from './components/entities/misc/Bullets.js';
+import { createHUD, updateHUD } from './components/menus/HUD.js';
+import { gameOver } from './components/menus/GameOver.js';
+import { showMenu } from './components/menus/Menu.js';
+import { checkCollisions } from './components/entities/misc/Collisions.js';
+import { updateHighScore } from './components/supabase/Users.js';
 
 // **Check if the user is logged in using localStorage**
 const userId = localStorage.getItem('userId');
