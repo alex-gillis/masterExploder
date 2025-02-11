@@ -1,7 +1,9 @@
+const path = require('path');
+
 module.exports = {
-    testMatch: ["**/test/*.test.js", "!**/src/**"],
+    testMatch: ["**/src/tests/**/*.test.js"], // Now it looks inside src/tests/
     transform: {
        "^.+\\.js$": "babel-jest",
     },
-    setupFiles: ["<rootDir>/.jest/env.js"],
- };
+    setupFilesAfterEnv: [path.resolve(__dirname, ".jest/env.js")], // Ensures dotenv loads
+};
