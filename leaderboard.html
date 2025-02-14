@@ -12,7 +12,7 @@
     <ul id="leaderboard"></ul>
 
     <script type="module">
-        import { getLeaderboard } from './src/components/supabase/Leaderboard.js';
+        import { getLeaderboard } from './src/backend/Leaderboard/Retrieve.js'
 
         async function displayLeaderboard() {
             const leaderboardData = await getLeaderboard();

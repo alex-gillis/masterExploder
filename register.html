@@ -16,7 +16,7 @@
     <p>Already have an account? <a href="./login.html">Login here</a></p>
 
     <script type="module">
-        import { registerUser } from './src/components/supabase/Users.js';
+        import { registerUser } from './src/backend/Users/Register.js'
 
         document.getElementById('register').addEventListener('click', async () => {
             const username = document.getElementById('username').value;

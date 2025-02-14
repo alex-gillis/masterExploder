@@ -6,7 +6,7 @@ import { createHUD, updateHUD } from './components/menus/HUD.js';
 import { gameOver } from './components/menus/GameOver.js';
 import { showMenu } from './components/menus/Menu.js';
 import { checkCollisions } from './components/entities/misc/Collisions.js';
-import { updateHighScore } from './components/supabase/Users.js';
+import { updateHighScore } from './backend/Leaderboard/Update.js'
 
 // **Check if the user is logged in using localStorage**
 const userId = localStorage.getItem('userId');
