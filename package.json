@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest C:/Projects/masterexploder/src/tests/supabase.test.js",
+    "test": "jest C:/Projects/masterexploder/src/tests/backend/supabase/supabase.test.js",
+    "test retrieve": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Retrieve.test.js",
+    "test update": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Update.test.js",
+    "test current": "jest C:/Projects/masterexploder/src/tests/backend/Users/Current.test.js",
+    "test login": "jest C:/Projects/masterexploder/src/tests/backend/Users/Login.test.js",
+    "test logout": "jest C:/Projects/masterexploder/src/tests/backend/Users/Logout.test.js",
+    "test register": "jest C:/Projects/masterexploder/src/tests/backend/Users/Register.test.js",
     "dev": "vite"
   },
   "keywords": [],

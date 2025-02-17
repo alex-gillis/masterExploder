@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { logoutUser } from '../src/Logout.js';
+import { logoutUser } from '../../../backend/Users/Logout.js';
 
 vi.mock('@supabase/supabase-js');
 

@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { getLeaderboard } from '../src/Retrieve.js';
+import { getLeaderboard } from '../../../backend/Leaderboard/Retrieve.js'
 
 vi.mock('@supabase/supabase-js');
 

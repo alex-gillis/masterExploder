@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
-import { loginUser } from '../src/Login.js';
+import { loginUser } from '../../../backend/Users/Login.js';
 
 vi.mock('@supabase/supabase-js');
 

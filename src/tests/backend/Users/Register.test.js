@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { registerUser } from '../src/Register.js';
+import { registerUser } from '../../../backend/Users/Register.js';
 
 vi.mock('@supabase/supabase-js');
 

@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { updateHighScore } from '../src/Update.js';
+import { updateHighScore } from '../../../backend/Leaderboard/Update.js';
 
 vi.mock('@supabase/supabase-js');
 
