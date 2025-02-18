@@ -4,12 +4,12 @@
   "main": "index.js",
   "scripts": {
     "test": "jest C:/Projects/masterexploder/src/tests/backend/supabase/supabase.test.js",
-    "test retrieve": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Retrieve.test.js",
-    "test update": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Update.test.js",
-    "test current": "jest C:/Projects/masterexploder/src/tests/backend/Users/Current.test.js",
-    "test login": "jest C:/Projects/masterexploder/src/tests/backend/Users/Login.test.js",
-    "test logout": "jest C:/Projects/masterexploder/src/tests/backend/Users/Logout.test.js",
-    "test register": "jest C:/Projects/masterexploder/src/tests/backend/Users/Register.test.js",
+    "retrieve": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Retrieve.test.js",
+    "lb-update": "jest C:/Projects/masterexploder/src/tests/backend/leaderboard/Update.test.js",
+    "us-current": "jest C:/Projects/masterexploder/src/tests/backend/Users/Current.test.js",
+    "us-login": "jest C:/Projects/masterexploder/src/tests/backend/Users/Login.test.js",
+    "us-logout": "jest C:/Projects/masterexploder/src/tests/backend/Users/Logout.test.js",
+    "us-register": "jest C:/Projects/masterexploder/src/tests/backend/Users/Register.test.js",
     "dev": "vite"
   },
   "keywords": [],
@@ -22,7 +22,8 @@
     "three": "^0.171.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.26.8",
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
     "babel-jest": "^29.7.0",
     "babel-preset-env": "^1.7.0",
     "dotenv": "^16.4.7",

@@ -1,15 +1,14 @@
-import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
-import { loginUser } from '../../../backend/Users/Login.js';
+import { loginUser } from '../../../backend/Leaderboard/Retrieve.js';
 
-vi.mock('@supabase/supabase-js');
+jest.mock('@supabase/supabase-js');
 
 const mockSupabase = {
-    from: vi.fn(() => ({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        single: vi.fn().mockReturnThis(),
+    from: jest.fn(() => ({
+        select: jest.fn().mockReturnThis(),
+        eq: jest.fn().mockReturnThis(),
+        single: jest.fn().mockReturnThis(),
     })),
 };
 
@@ -17,7 +16,7 @@ createClient.mockReturnValue(mockSupabase);
 
 describe('loginUser', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     test('should return user data on successful login', async () => {

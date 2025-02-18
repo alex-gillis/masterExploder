@@ -1,12 +1,11 @@
-import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { getCurrentUser } from '../../../backend/Users/Current.js';
+import { getCurrentUser } from '../../../backend/Leaderboard/Retrieve.js';
 
-vi.mock('@supabase/supabase-js');
+jest.mock('@supabase/supabase-js');
 
 const mockSupabase = {
     auth: {
-        getUser: vi.fn(),
+        getUser: jest.fn(),
     },
 };
 
@@ -14,7 +13,7 @@ createClient.mockReturnValue(mockSupabase);
 
 describe('getCurrentUser', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     test('should return user when authenticated', async () => {

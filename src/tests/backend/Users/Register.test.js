@@ -1,14 +1,13 @@
-import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { registerUser } from '../../../backend/Users/Register.js';
+import { registerUser } from '../../../backend/Leaderboard/Retrieve.js';
 
-vi.mock('@supabase/supabase-js');
+jest.mock('@supabase/supabase-js');
 
 const mockSupabase = {
-    from: vi.fn(() => ({
-        insert: vi.fn().mockReturnThis(),
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockReturnThis(),
+    from: jest.fn(() => ({
+        insert: jest.fn().mockReturnThis(),
+        select: jest.fn().mockReturnThis(),
+        single: jest.fn().mockReturnThis(),
     })),
 };
 
@@ -16,7 +15,7 @@ createClient.mockReturnValue(mockSupabase);
 
 describe('registerUser', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     test('should return user ID on successful registration', async () => {

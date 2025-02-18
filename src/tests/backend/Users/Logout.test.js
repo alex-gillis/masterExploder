@@ -1,12 +1,11 @@
-import { vi } from 'vitest';
 import { createClient } from '@supabase/supabase-js';
-import { logoutUser } from '../../../backend/Users/Logout.js';
+import { logoutUser } from '../../../backend/Leaderboard/Retrieve.js';
 
-vi.mock('@supabase/supabase-js');
+jest.mock('@supabase/supabase-js');
 
 const mockSupabase = {
     auth: {
-        signOut: vi.fn(),
+        signOut: jest.fn(),
     },
 };
 
@@ -14,7 +13,7 @@ createClient.mockReturnValue(mockSupabase);
 
 describe('logoutUser', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
+        jest.clearAllMocks();
     });
 
     test('should call signOut without errors', async () => {
