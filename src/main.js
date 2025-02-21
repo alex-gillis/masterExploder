@@ -6,9 +6,9 @@ import { createHUD, updateHUD } from './components/menus/HUD.js';
 import { gameOver } from './components/menus/GameOver.js';
 import { showMenu } from './components/menus/Menu.js';
 import { checkCollisions } from './components/entities/misc/Collisions.js';
-import { updateHighScore } from './backend/Leaderboard/Update.js'
+import { updateHighScore } from './backend/Leaderboard/Update.js';
 
-// **Check if the user is logged in using localStorage**
+// **Check if user is logged in**
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
 
@@ -21,36 +21,30 @@ if (!userId) {
 
 // **Scene, Camera, Renderer Setup**
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(115, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
 
-const gameRunning = { value: true }; // Track if the game is running
-
-const DEBUG_MODE = false;
+const gameRunning = { value: true }; 
+const DEBUG_MODE = true;
 const bullets = [];
 const enemyBullets = [];
 const targets = [];
 const keys = {}; 
 
-// Initialize HUD
+// **Initialize HUD**
 const { scoreElement, healthElement } = createHUD();
 const score = { value: 0 }; 
 const health = { value: 3 }; 
 
-let gameState = 'menu'; // 'menu', 'playing', 'paused', 'gameOver'
+let gameState = 'menu'; 
 
 // **Ship Stats**
 let fireRate = 300;
 let moveSpeed = 0.1;
 
-// **Enemy Stats**
-let enemyFireRate = 2000; // 2 seconds
-
-// **Cooldowns**
-let lastFired = 0;
 let lastHitTime = 0; 
 
 // **Create Ship & Targets**
@@ -59,50 +53,85 @@ createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE, 'oscillate'
 createTarget(scene, targets, new THREE.Vector3(-2, 0, 0), DEBUG_MODE, 'zigzag');
 createTarget(scene, targets, new THREE.Vector3(0, 5 , 0), DEBUG_MODE, 'circular');
 
-function startGame() {
-    gameState = 'playing';
-    document.getElementById('menu').remove(); // Remove menu
-    animate(); // Start the game loop
-}
+// **Show Main Menu**
+showMenu('menu', startGame, resetGame, resumeGame);
+animate();
+camera.position.z = 10;
 
-function pauseGame() {
-    if (gameState === 'playing') {
-        gameState = 'paused';
-        cancelAnimationFrame(animationFrameId); // Stop animation
-        showMenu('paused', startGame, resetGame, resumeGame);
-    }
-}
-
+// **Resume Game
 function resumeGame() {
     if (gameState === 'paused') {
         gameState = 'playing';
-        document.getElementById('menu').remove(); // Remove menu
+        document.getElementById('menu')?.remove(); // Remove menu if exists
         animate(); // Restart the game loop
+    }
+}
+
+// **Enemy Wave System**
+let waveNumber = 1; 
+let enemiesRemaining = 0; 
+let waveActive = false; 
+
+function spawnWave(scene) {
+    if (waveActive) return;
+
+    waveActive = true;
+    enemiesRemaining = waveNumber * 3; 
+    console.log(`Starting Wave ${waveNumber} with ${enemiesRemaining} enemies.`);
+
+    for (let i = 0; i < enemiesRemaining; i++) {
+        let x = (Math.random() - 0.5) * 10;
+        let y = Math.random() * 10 + 5; 
+        let position = new THREE.Vector3(x, y, 0);
+        createTarget(scene, targets, position, DEBUG_MODE);
+    }
+}
+
+// **Check if all enemies are destroyed**
+function checkWaveCompletion(scene) {
+    if (enemiesRemaining <= 0) {
+        waveActive = false;
+        waveNumber++;
+
+        setTimeout(() => {
+            console.log(`Wave ${waveNumber} incoming...`);
+            spawnWave(scene);
+        }, 3000);
     }
 }
 
 // **Game Over Handling**
 async function handleGameOver() {
-    await updateHighScore(userId, score.value); // Save the high score
+    await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
 }
 
 function resetGame() {
-    window.location.reload(); // Reload the page to reset the game
+    window.location.reload();
 }
 
 // **Track Keyboard Input**
 window.addEventListener('keydown', (event) => keys[event.key] = true);
 window.addEventListener('keyup', (event) => keys[event.key] = false);
+window.addEventListener('keydown', (event) => { keys[event.key.toLowerCase()] = true; });
+window.addEventListener('keyup', (event) => { keys[event.key.toLowerCase()] = false; });
 
 // **Move Ship Function**
 function moveShip() {
     if (keys['ArrowLeft']) ship.position.x -= moveSpeed;
     if (keys['ArrowRight']) ship.position.x += moveSpeed;
-
-    // Clamp ship position within screen bounds
+    if (keys['ArrowDown']) ship.position.y -= moveSpeed * 0.5;
+    if (keys['ArrowUp']) ship.position.y += moveSpeed * 0.5;
+    if (keys['a']) ship.position.x -= moveSpeed;
+    if (keys['d']) ship.position.x += moveSpeed;
+    if (keys['s']) ship.position.y -= moveSpeed * 0.5;
+    if (keys['w']) ship.position.y += moveSpeed * 0.5;
     ship.position.x = THREE.MathUtils.clamp(ship.position.x, -10, 10);
+    ship.position.y = THREE.MathUtils.clamp(ship.position.y, -10, 10);
 }
+
+// **Declare lastFired globally**
+let lastFired = 0;
 
 // **Shoot Bullets**
 window.addEventListener('keydown', (event) => {
@@ -110,22 +139,19 @@ window.addEventListener('keydown', (event) => {
         const currentTime = Date.now();
         if (currentTime - lastFired >= fireRate) {
             shootBullet(scene, bullets, ship, DEBUG_MODE);
-            lastFired = currentTime;
+            lastFired = currentTime; //  Update lastFired to prevent spamming
         }
     }
 });
 
-let animationFrameId;
-
-// **Game Loop**
+// **Update the Game Loop**
 function animate() {
-    if (gameState !== 'playing') return; // Stop animation if not playing
-
+    if (gameState !== 'playing') return;
     animationFrameId = requestAnimationFrame(animate);
 
     moveShip();
     updateBullets(scene, bullets);
-    animateTargets(scene, targets, enemyBullets, enemyFireRate);
+    animateTargets(scene, targets, enemyBullets);
 
     lastHitTime = checkCollisions(
         scene,
@@ -136,17 +162,27 @@ function animate() {
         score,
         health,
         updateHUD,
-        handleGameOver, // Call the combined gameOver function
+        handleGameOver,
         scoreElement,
         healthElement,
         lastHitTime,
-        resetGame
+        resetGame,
+        gameRunning,
+        spawnWave, 
+        enemiesRemaining
     );
 
+    checkWaveCompletion(scene);
     renderer.render(scene, camera);
 }
 
-// **Show Main Menu**
-showMenu('menu', startGame, resetGame, resumeGame);
-animate();
-camera.position.z = 10;
+
+let animationFrameId;
+
+// **Start Game**
+function startGame() {
+    gameState = 'playing';
+    document.getElementById('menu').remove();
+    spawnWave(scene);
+    animate();
+}

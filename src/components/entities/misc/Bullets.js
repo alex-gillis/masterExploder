@@ -7,6 +7,7 @@ export function shootBullet(scene, bullets, ship, DEBUG_MODE) {
 
     bullet.position.set(ship.position.x, ship.position.y + 1, ship.position.z);
 
+    // Assign bounding box correctly & ensure updates each frame
     const boundingBox = new THREE.Box3().setFromObject(bullet);
     const helper = new THREE.BoxHelper(bullet, 0x0000ff);
     helper.material.visible = DEBUG_MODE;
@@ -19,13 +20,17 @@ export function shootBullet(scene, bullets, ship, DEBUG_MODE) {
 export function updateBullets(scene, bullets) {
     const bulletSpeed = 0.2;
 
-    bullets.forEach((bulletObj, index) => {
-        const { bullet } = bulletObj;
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const { bullet, boundingBox, helper } = bullets[i];
+
         bullet.position.y += bulletSpeed;
+        boundingBox.setFromObject(bullet); // Ensure bounding box updates with movement
+        helper.update();
 
         if (bullet.position.y > 10) {
             scene.remove(bullet);
-            bullets.splice(index, 1);
+            scene.remove(helper);
+            bullets.splice(i, 1);
         }
-    });
+    }
 }
