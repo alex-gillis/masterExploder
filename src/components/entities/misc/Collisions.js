@@ -6,61 +6,64 @@ export function checkCollisions(
     enemyBullets,
     targets,
     ship,
-    score,          
-    health,         
+    score,
+    health,
     updateHUD,
-    gameOver,
+    handleGameOver,
     scoreElement,
     healthElement,
     lastHitTime,
     resetGame,
     gameRunning,
     spawnWave,
-    enemiesRemaining
+    waveNumber,
+    waveActive,
+    enemiesRemaining 
 ) {
     bullets.forEach((bulletObj, bulletIndex) => {
         if (!bulletObj || !bulletObj.bullet) return;
 
         const { bullet, boundingBox: bulletBoundingBox, helper: bulletHelper } = bulletObj;
-        bulletBoundingBox.setFromObject(bullet); // Ensure bounding box updates
+        bulletBoundingBox.setFromObject(bullet);
         bulletHelper.update();
 
         targets.forEach((targetObj, targetIndex) => {
             if (!targetObj || !targetObj.target) return;
 
             const { target, boundingBox: targetBoundingBox, helper: targetHelper } = targetObj;
-            targetBoundingBox.setFromObject(target); // Ensure bounding box updates
+            targetBoundingBox.setFromObject(target);
             targetHelper.update();
 
             if (bulletBoundingBox.intersectsBox(targetBoundingBox)) {
-                console.log('Collision detected: Bullet hit target.');
+                // console.log('Collision detected: Bullet hit target.');
 
-                // Remove bullet from scene
+                // Remove bullet
                 scene.remove(bullet);
                 scene.remove(bulletHelper);
                 bullets.splice(bulletIndex, 1);
 
-                // Remove target from scene
+                // Call `onDestroy()` before removing target
+                target.onDestroy();
                 scene.remove(target);
                 targets.splice(targetIndex, 1);
 
-                // Ensure `enemiesRemaining--` happens correctly
-                if (typeof enemiesRemaining !== 'undefined') {
-                    enemiesRemaining--;
-                }
-                
-                target.material.color.set(`#${Math.floor(Math.random() * 0xffffff)
-                    .toString(16)
-                    .padStart(6, '0')}`);
+                // Ensure `enemiesRemaining.value--` happens correctly
+                if (enemiesRemaining && typeof enemiesRemaining.value !== 'undefined') {
+                    enemiesRemaining.value--;
+                    console.log(`Enemy destroyed. Remaining: ${enemiesRemaining.value}`);
+                } else {
+                    console.error("Error: enemiesRemaining is undefined in Collisions.js", enemiesRemaining);
+                }                
 
                 // Update score
                 score.value += 10;
                 updateHUD(scoreElement, healthElement, score.value, health.value);
 
-                // Check if all enemies are gone to trigger next wave
-                if (enemiesRemaining <= 0) {
+                // Check if all enemies are gone and trigger next wave
+                if (enemiesRemaining.value === 0) {
                     setTimeout(() => {
                         console.log(`All enemies defeated. Spawning next wave...`);
+                        waveActive = false;
                         spawnWave(scene);
                     }, 2000);
                 }
@@ -103,5 +106,5 @@ export function checkCollisions(
         }
     });
 
-    return lastHitTime; // Return updated lastHitTime
+    return lastHitTime;
 }

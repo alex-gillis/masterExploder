@@ -16,16 +16,17 @@ function circular(target, elapsedTime) {
     target.position.y = target.initialY + Math.sin(elapsedTime) * radius;
 }
 
-export function createTarget(scene, targets, position, DEBUG_MODE) {
+export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const material = new THREE.MeshBasicMaterial({ color: `#${Math.floor(Math.random() * 0xffffff)
+                                        .toString(16)
+                                        .padStart(6, '0')}` });
     const target = new THREE.Mesh(geometry, material);
 
     target.position.copy(position);
     target.initialX = position.x;
     target.initialY = position.y;
 
-    // DEBUG Helper
     const boundingBox = new THREE.Box3().setFromObject(target);
     const helper = new THREE.BoxHelper(target, 0xff0000);
     helper.material.visible = DEBUG_MODE;
@@ -38,13 +39,18 @@ export function createTarget(scene, targets, position, DEBUG_MODE) {
     target.onDestroy = () => {
         if (target.isAlive) {
             target.isAlive = false;
-            enemiesRemaining--;
+
+            // if (typeof enemiesRemaining.value !== 'undefined') { 
+            //     enemiesRemaining.value--; 
+            //     console.log(`Enemy destroyed. Remaining: ${enemiesRemaining.value}`);
+            // } else {
+            //     console.error("Error: enemiesRemaining is not an object!", enemiesRemaining);
+            // }
         }
     };
 
     scene.add(target);
     scene.add(helper);
-    // targets.push(target);
     targets.push({ target, boundingBox, helper, lastFired: null });
 }
 
@@ -54,7 +60,7 @@ export function animateTargets(scene, targets, enemyBullets) {
 
     targets.forEach((targetObj) => {
         const { target, lastFired, fireCooldown } = targetObj;
-        
+
         switch (target.pattern) {
             case 'oscillate': oscillate(target, elapsedTime); break;
             case 'zigzag': zigzag(target, elapsedTime); break;

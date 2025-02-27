@@ -27,7 +27,7 @@ export function updateBullets(scene, bullets) {
         boundingBox.setFromObject(bullet); // Ensure bounding box updates with movement
         helper.update();
 
-        if (bullet.position.y > 10) {
+        if (bullet.position.y > 20) {
             scene.remove(bullet);
             scene.remove(helper);
             bullets.splice(i, 1);

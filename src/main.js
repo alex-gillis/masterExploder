@@ -8,7 +8,7 @@ import { showMenu } from './components/menus/Menu.js';
 import { checkCollisions } from './components/entities/misc/Collisions.js';
 import { updateHighScore } from './backend/Leaderboard/Update.js';
 
-// **Check if user is logged in**
+// Check if user is logged in
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
 
@@ -19,7 +19,7 @@ if (!userId) {
     console.log('User authenticated:', { userId, username });
 }
 
-// **Scene, Camera, Renderer Setup**
+// Scene, Camera, Renderer Setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(115, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer();
@@ -28,37 +28,37 @@ renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
 
 const gameRunning = { value: true }; 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 const bullets = [];
 const enemyBullets = [];
 const targets = [];
 const keys = {}; 
 
-// **Initialize HUD**
+// Initialize HUD
 const { scoreElement, healthElement } = createHUD();
 const score = { value: 0 }; 
 const health = { value: 3 }; 
 
 let gameState = 'menu'; 
 
-// **Ship Stats**
+// Ship Stats
 let fireRate = 300;
 let moveSpeed = 0.1;
 
 let lastHitTime = 0; 
 
-// **Create Ship & Targets**
+// Create Ship & Targets
 const ship = createShip(scene);
-createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE, 'oscillate');
-createTarget(scene, targets, new THREE.Vector3(-2, 0, 0), DEBUG_MODE, 'zigzag');
-createTarget(scene, targets, new THREE.Vector3(0, 5 , 0), DEBUG_MODE, 'circular');
+// createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE, 'oscillate');
+// createTarget(scene, targets, new THREE.Vector3(-2, 0, 0), DEBUG_MODE, 'zigzag');
+// createTarget(scene, targets, new THREE.Vector3(0, 5 , 0), DEBUG_MODE, 'circular');
 
-// **Show Main Menu**
+// Show Main Menu
 showMenu('menu', startGame, resetGame, resumeGame);
 animate();
 camera.position.z = 10;
 
-// **Resume Game
+// Resume Game
 function resumeGame() {
     if (gameState === 'paused') {
         gameState = 'playing';
@@ -67,40 +67,45 @@ function resumeGame() {
     }
 }
 
-// **Enemy Wave System**
-let waveNumber = 1; 
-let enemiesRemaining = 0; 
+// Enemy Wave System
+let waveNumber = 0; 
+let enemiesRemaining = { value: 0 };
 let waveActive = false; 
 
 function spawnWave(scene) {
-    if (waveActive) return;
 
     waveActive = true;
-    enemiesRemaining = waveNumber * 3; 
-    console.log(`Starting Wave ${waveNumber} with ${enemiesRemaining} enemies.`);
+    waveNumber = waveNumber + 1;
+    enemiesRemaining.value = waveNumber * 3; 
+    
+    // console.log("DEBUG: enemiesRemaining before wave spawn:", enemiesRemaining);
+    // console.log("Type of enemiesRemaining:", typeof enemiesRemaining);
+    // console.log("Type of enemiesRemaining.value:", typeof enemiesRemaining.value);
 
-    for (let i = 0; i < enemiesRemaining; i++) {
+    console.log(`Starting Wave ${waveNumber} with ${enemiesRemaining.value} enemies.`);
+
+    for (let i = 0; i < enemiesRemaining.value; i++) {
         let x = (Math.random() - 0.5) * 10;
-        let y = Math.random() * 10 + 5; 
+        let y = Math.random() * 10 + 5;
         let position = new THREE.Vector3(x, y, 0);
-        createTarget(scene, targets, position, DEBUG_MODE);
+        createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining); 
     }
 }
 
-// **Check if all enemies are destroyed**
-function checkWaveCompletion(scene) {
-    if (enemiesRemaining <= 0) {
+// Check if all enemies are destroyed
+function checkWaveCompletion(myScene) {
+    if (enemiesRemaining.value == 0 && !waveActive) {
         waveActive = false;
         waveNumber++;
 
         setTimeout(() => {
             console.log(`Wave ${waveNumber} incoming...`);
-            spawnWave(scene);
+            spawnWave(myScene);
         }, 3000);
     }
 }
 
-// **Game Over Handling**
+// Game Over Handling
 async function handleGameOver() {
     await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
@@ -110,13 +115,13 @@ function resetGame() {
     window.location.reload();
 }
 
-// **Track Keyboard Input**
+// Track Keyboard Input
 window.addEventListener('keydown', (event) => keys[event.key] = true);
 window.addEventListener('keyup', (event) => keys[event.key] = false);
 window.addEventListener('keydown', (event) => { keys[event.key.toLowerCase()] = true; });
 window.addEventListener('keyup', (event) => { keys[event.key.toLowerCase()] = false; });
 
-// **Move Ship Function**
+// Move Ship Function
 function moveShip() {
     if (keys['ArrowLeft']) ship.position.x -= moveSpeed;
     if (keys['ArrowRight']) ship.position.x += moveSpeed;
@@ -130,10 +135,10 @@ function moveShip() {
     ship.position.y = THREE.MathUtils.clamp(ship.position.y, -10, 10);
 }
 
-// **Declare lastFired globally**
+// Declare lastFired globally
 let lastFired = 0;
 
-// **Shoot Bullets**
+// Shoot Bullets
 window.addEventListener('keydown', (event) => {
     if (event.key === ' ') {
         const currentTime = Date.now();
@@ -144,7 +149,7 @@ window.addEventListener('keydown', (event) => {
     }
 });
 
-// **Update the Game Loop**
+// Update the Game Loop
 function animate() {
     if (gameState !== 'playing') return;
     animationFrameId = requestAnimationFrame(animate);
@@ -168,18 +173,20 @@ function animate() {
         lastHitTime,
         resetGame,
         gameRunning,
-        spawnWave, 
-        enemiesRemaining
+        spawnWave,
+        waveNumber,
+        waveActive,
+        enemiesRemaining 
     );
+    
 
     checkWaveCompletion(scene);
     renderer.render(scene, camera);
 }
 
-
 let animationFrameId;
 
-// **Start Game**
+// Start Game
 function startGame() {
     gameState = 'playing';
     document.getElementById('menu').remove();
