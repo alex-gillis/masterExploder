@@ -7,6 +7,8 @@ import { gameOver } from './components/menus/GameOver.js';
 import { showMenu } from './components/menus/Menu.js';
 import { checkCollisions } from './components/entities/misc/Collisions.js';
 import { updateHighScore } from './backend/Leaderboard/Update.js';
+import { getUserWaveData } from './backend/Waves/Retrieve.js';
+import { updateUserWaveData } from './backend/Waves/Update.js';
 
 // Check if user is logged in
 const userId = localStorage.getItem('userId');
@@ -36,7 +38,7 @@ const keys = {};
 
 // Initialize HUD
 const { scoreElement, healthElement, waveElement } = createHUD();
-const score = { value: 0 }; 
+let score = { value: 0 }; 
 const health = { value: 3 }; 
 
 let gameState = 'menu'; 
@@ -67,20 +69,43 @@ function resumeGame() {
     }
 }
 
-// Enemy Wave System
+// Declare Global Variables
 let waveNumber = 0; 
 let enemiesRemaining = { value: 0 };
 let waveActive = false; 
+let startUp = true;
 
-function spawnWave(scene) {
-
-    waveActive = true;
-    waveNumber = waveNumber + 1;
-    enemiesRemaining.value = waveNumber * 3; 
+// Retrieve user progress when they log in
+async function loadUserProgress() {
+    const userWaveData = await getUserWaveData(userId);
     
-    // console.log("DEBUG: enemiesRemaining before wave spawn:", enemiesRemaining);
-    // console.log("Type of enemiesRemaining:", typeof enemiesRemaining);
-    // console.log("Type of enemiesRemaining.value:", typeof enemiesRemaining.value);
+    if (userWaveData) {
+        waveNumber = userWaveData.waveNumber || 1;
+        enemiesRemaining.value = userWaveData.currentEnemies || 0;
+        score.value = userWaveData.currentScore || 0;
+    } else {
+        console.warn(`User ${userId} has no wave data, starting fresh.`);
+        waveNumber = 1;
+        enemiesRemaining.value = 0;
+        score.value = 0;
+    }
+
+    console.log(`Loaded User ${userId} progress - Wave: ${waveNumber}, Enemies Remaining: ${enemiesRemaining.value}, Score: ${score.value}`);
+}
+
+// Update user progress when a wave ends
+async function updateUserProgress() {
+    await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value);
+}
+
+async function spawnWave(scene) {
+    waveActive = true;
+    if (!startUp) {
+        waveNumber++; // Move to the next wave
+        enemiesRemaining.value = waveNumber * 3; 
+    }
+    startUp = false;
+    
 
     console.log(`Starting Wave ${waveNumber} with ${enemiesRemaining.value} enemies.`);
 
@@ -90,11 +115,13 @@ function spawnWave(scene) {
         let x = (Math.random() - 0.5) * 10;
         let y = Math.random() * 10 + 5;
         let position = new THREE.Vector3(x, y, 0);
-        createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining); 
+        createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining, updateUserProgress);
     }
+
+    await updateUserProgress(); // Save wave progress
 }
 
-// Check if all enemies are destroyed
+// Check if all enemies are destroyed and save progress
 function checkWaveCompletion(myScene) {
     if (enemiesRemaining.value == 0 && !waveActive) {
         waveActive = false;
@@ -107,6 +134,9 @@ function checkWaveCompletion(myScene) {
     }
 }
 
+// Call `loadUserProgress()` when the game starts
+await loadUserProgress();
+
 // Game Over Handling
 async function handleGameOver() {
     await updateHighScore(userId, score.value);
@@ -114,6 +144,7 @@ async function handleGameOver() {
 }
 
 function resetGame() {
+    updateUserWaveData(userId, 1, 3, 0);
     window.location.reload();
 }
 
@@ -158,7 +189,7 @@ function animate() {
 
     moveShip();
     updateBullets(scene, bullets);
-    animateTargets(scene, targets, enemyBullets, enemiesRemaining);
+    animateTargets(scene, targets, enemyBullets);
 
     lastHitTime = checkCollisions(
         scene,
@@ -179,7 +210,7 @@ function animate() {
         spawnWave,
         waveNumber,
         waveActive,
-        enemiesRemaining 
+        enemiesRemaining
     );
     
 

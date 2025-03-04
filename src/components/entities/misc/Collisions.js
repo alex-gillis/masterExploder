@@ -19,7 +19,7 @@ export function checkCollisions(
     spawnWave,
     waveNumber,
     waveActive,
-    enemiesRemaining 
+    enemiesRemaining
 ) {
     bullets.forEach((bulletObj, bulletIndex) => {
         if (!bulletObj || !bulletObj.bullet) return;

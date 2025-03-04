@@ -16,7 +16,7 @@ function circular(target, elapsedTime) {
     target.position.y = target.initialY + Math.sin(elapsedTime) * radius;
 }
 
-export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining) {
+export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining, updateUserProgress) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
     const material = new THREE.MeshBasicMaterial({ color: `#${Math.floor(Math.random() * 0xffffff)
                                         .toString(16)
@@ -42,6 +42,7 @@ export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemain
     
             if (typeof enemiesRemaining.value !== 'undefined') {
                 enemiesRemaining.value--; 
+                updateUserProgress();
                 // console.log(`Enemy removed. Remaining: ${enemiesRemaining.value}`);
             }
         }
@@ -54,7 +55,7 @@ export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemain
 }
 
 // Animation Patterns
-export function animateTargets(scene, targets, enemyBullets, enemiesRemaining) {
+export function animateTargets(scene, targets, enemyBullets) {
     const elapsedTime = Date.now() * 0.001;
 
     for (let i = targets.length - 1; i >= 0; i--) {
