@@ -35,7 +35,7 @@ const targets = [];
 const keys = {}; 
 
 // Initialize HUD
-const { scoreElement, healthElement } = createHUD();
+const { scoreElement, healthElement, waveElement } = createHUD();
 const score = { value: 0 }; 
 const health = { value: 3 }; 
 
@@ -83,6 +83,8 @@ function spawnWave(scene) {
     // console.log("Type of enemiesRemaining.value:", typeof enemiesRemaining.value);
 
     console.log(`Starting Wave ${waveNumber} with ${enemiesRemaining.value} enemies.`);
+
+    updateHUD(scoreElement, healthElement, waveElement, score.value, health.value, waveNumber);
 
     for (let i = 0; i < enemiesRemaining.value; i++) {
         let x = (Math.random() - 0.5) * 10;
@@ -156,7 +158,7 @@ function animate() {
 
     moveShip();
     updateBullets(scene, bullets);
-    animateTargets(scene, targets, enemyBullets);
+    animateTargets(scene, targets, enemyBullets, enemiesRemaining);
 
     lastHitTime = checkCollisions(
         scene,
@@ -170,6 +172,7 @@ function animate() {
         handleGameOver,
         scoreElement,
         healthElement,
+        waveElement,
         lastHitTime,
         resetGame,
         gameRunning,

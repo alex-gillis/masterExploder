@@ -12,6 +12,7 @@ export function checkCollisions(
     handleGameOver,
     scoreElement,
     healthElement,
+    waveElement,
     lastHitTime,
     resetGame,
     gameRunning,
@@ -49,7 +50,7 @@ export function checkCollisions(
 
                 // Ensure `enemiesRemaining.value--` happens correctly
                 if (enemiesRemaining && typeof enemiesRemaining.value !== 'undefined') {
-                    enemiesRemaining.value--;
+                    // enemiesRemaining.value--;
                     console.log(`Enemy destroyed. Remaining: ${enemiesRemaining.value}`);
                 } else {
                     console.error("Error: enemiesRemaining is undefined in Collisions.js", enemiesRemaining);
@@ -57,7 +58,7 @@ export function checkCollisions(
 
                 // Update score
                 score.value += 10;
-                updateHUD(scoreElement, healthElement, score.value, health.value);
+                updateHUD(scoreElement, healthElement, waveElement, score.value, health.value, waveNumber);
 
                 // Check if all enemies are gone and trigger next wave
                 if (enemiesRemaining.value === 0) {

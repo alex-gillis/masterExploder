@@ -39,15 +39,14 @@ export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemain
     target.onDestroy = () => {
         if (target.isAlive) {
             target.isAlive = false;
-
-            // if (typeof enemiesRemaining.value !== 'undefined') { 
-            //     enemiesRemaining.value--; 
-            //     console.log(`Enemy destroyed. Remaining: ${enemiesRemaining.value}`);
-            // } else {
-            //     console.error("Error: enemiesRemaining is not an object!", enemiesRemaining);
-            // }
+    
+            if (typeof enemiesRemaining.value !== 'undefined') {
+                enemiesRemaining.value--; 
+                // console.log(`Enemy removed. Remaining: ${enemiesRemaining.value}`);
+            }
         }
     };
+    
 
     scene.add(target);
     scene.add(helper);
@@ -55,16 +54,25 @@ export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemain
 }
 
 // Animation Patterns
-export function animateTargets(scene, targets, enemyBullets) {
+export function animateTargets(scene, targets, enemyBullets, enemiesRemaining) {
     const elapsedTime = Date.now() * 0.001;
 
-    targets.forEach((targetObj) => {
-        const { target, lastFired, fireCooldown } = targetObj;
+    for (let i = targets.length - 1; i >= 0; i--) {
+        const { target, lastFired, fireCooldown } = targets[i];
 
         switch (target.pattern) {
             case 'oscillate': oscillate(target, elapsedTime); break;
             case 'zigzag': zigzag(target, elapsedTime); break;
             case 'circular': circular(target, elapsedTime); break;
         }
-    });
+        
+        if (target.position.y < -10) {
+            console.log("Enemy left the screen! Removing...");
+
+            target.onDestroy();
+            
+            scene.remove(target);
+            targets.splice(i, 1);
+        }
+    }
 }
