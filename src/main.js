@@ -81,13 +81,15 @@ async function loadUserProgress() {
     
     if (userWaveData) {
         waveNumber = userWaveData.waveNumber || 1;
-        enemiesRemaining.value = userWaveData.currentEnemies || 0;
+        enemiesRemaining.value = userWaveData.currentEnemies || 3;
         score.value = userWaveData.currentScore || 0;
+        health.value = userWaveData.currentHealth || 0;
     } else {
         console.warn(`User ${userId} has no wave data, starting fresh.`);
         waveNumber = 1;
-        enemiesRemaining.value = 0;
+        enemiesRemaining.value = 3;
         score.value = 0;
+        health.value = 3;
     }
 
     console.log(`Loaded User ${userId} progress - Wave: ${waveNumber}, Enemies Remaining: ${enemiesRemaining.value}, Score: ${score.value}`);
@@ -95,7 +97,7 @@ async function loadUserProgress() {
 
 // Update user progress when a wave ends
 async function updateUserProgress() {
-    await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value);
+    await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
 }
 
 async function spawnWave(scene) {
@@ -141,6 +143,7 @@ await loadUserProgress();
 async function handleGameOver() {
     await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
+    await updateUserWaveData(userId, 1, 3, 0, 3);
 }
 
 function resetGame() {

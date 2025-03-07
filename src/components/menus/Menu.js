@@ -27,7 +27,7 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
                 window.location.href = './leaderboard.html';
             });
 
-            // ✅ Now we ensure the Logout button gets its event
+            // Now we ensure the Logout button gets its event
             const logoutButton = document.getElementById('logout');
             if (logoutButton) {
                 logoutButton.addEventListener('click', () => {

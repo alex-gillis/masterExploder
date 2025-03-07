@@ -1,10 +1,10 @@
 import { supabase } from '../Supabase.js';
 
-export async function updateUserWaveData(userId, waveNumber, currentEnemies, currentScore) {
+export async function updateUserWaveData(userId, waveNumber, currentEnemies, currentScore, currentHealth) {
     try {
         const { data, error } = await supabase
             .from('users')
-            .update({ waveNumber, currentEnemies, currentScore })
+            .update({ waveNumber, currentEnemies, currentScore, currentHealth })
             .eq('id', userId);
 
         if (error) {

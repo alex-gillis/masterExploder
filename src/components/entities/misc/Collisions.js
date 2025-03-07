@@ -43,7 +43,6 @@ export function checkCollisions(
                 scene.remove(bulletHelper);
                 bullets.splice(bulletIndex, 1);
 
-                // Call `onDestroy()` before removing target
                 target.onDestroy();
                 scene.remove(target);
                 targets.splice(targetIndex, 1);
@@ -70,6 +69,48 @@ export function checkCollisions(
                 }
             }
         });
+    });
+
+    targets.forEach((targetObj, targetIndex) => {
+        const { target, boundingBox: targetBoundingBox } = targetObj;
+        targetBoundingBox.setFromObject(target); // Update bounding box
+
+        const shipBoundingBox = new THREE.Box3().setFromObject(ship);
+
+        if (targetBoundingBox.intersectsBox(shipBoundingBox)) {
+            const currentTime = Date.now();
+
+            // Add hit cooldown (500ms)
+            if (currentTime - lastHitTime >= 500) {
+                console.log('Player hit by an enemy!');
+
+                // Remove enemy from scene
+                target.onDestroy();
+                scene.remove(target);
+                targets.splice(targetIndex, 1);
+
+                // Reduce health & update HUD
+                health.value -= 1;
+                updateHUD(scoreElement, healthElement, waveElement, score.value, health.value, waveNumber);
+
+                lastHitTime = currentTime; // Update last hit time
+
+                // Check if player lost all health
+                if (health.value <= 0) {
+                    console.log('Game Over: Player health reached 0.');
+                    handleGameOver();
+                }
+
+                // Check if all enemies are gone and trigger next wave
+                if (enemiesRemaining.value === 0) {
+                    setTimeout(() => {
+                        console.log(`All enemies defeated. Spawning next wave...`);
+                        waveActive = false;
+                        spawnWave(scene);
+                    }, 2000);
+                }
+            }
+        }
     });
 
     // Enemy bullet collisions with ship
