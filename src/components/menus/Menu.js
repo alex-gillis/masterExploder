@@ -1,3 +1,8 @@
+import { getLeaderboard } from '../../backend/Leaderboard/Retrieve.js';
+import { loginUser } from '../../backend/Users/Login.js';
+import { registerUser } from '../../backend/Users/Register.js';
+
+
 export function showMenu(state, startGame, resetGame, resumeGame) {
     const existingMenu = document.getElementById('menu');
     if (existingMenu) existingMenu.remove();
@@ -12,69 +17,135 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
     menu.style.color = 'white';
     menu.style.fontSize = '24px';
 
+    const userId = localStorage.getItem('userId'); 
+
     switch (state) {
         case 'menu':
-            menu.innerHTML = `
-                <h1>Main Menu</h1>
-                <button id="startGame">Start Game</button>
-                <button id="leaderboard">Leaderboard</button>
-                <button id="logout">Logout</button>
-            `;
+            menu.innerHTML = `<h1>Main Menu</h1>`;
+
+            if (userId) {
+                menu.innerHTML += `
+                    <button id="startGame">Start Game</button>
+                    <button id="leaderboard">Leaderboard</button>
+                    <button id="logout">Logout</button>
+                `;
+            } else {
+                menu.innerHTML += `
+                    <button id="login">Login</button>
+                    <button id="register">Register</button>
+                `;
+            }
+
             document.body.appendChild(menu);
 
-            document.getElementById('startGame').addEventListener('click', startGame);
-            document.getElementById('leaderboard').addEventListener('click', () => {
-                window.location.href = './leaderboard.html';
-            });
-
-            // Now we ensure the Logout button gets its event
-            const logoutButton = document.getElementById('logout');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', () => {
+            if (userId) {
+                document.getElementById('startGame')?.addEventListener('click', startGame);
+                document.getElementById('leaderboard')?.addEventListener('click', () => showMenu('leaderboard'));
+                document.getElementById('logout')?.addEventListener('click', () => {
                     localStorage.clear();
-                    window.location.href = './login.html';
+                    showMenu('menu');
                 });
             } else {
-                console.warn("Logout button not found in Menu.");
+                document.getElementById('login')?.addEventListener('click', () => showMenu('login'));
+                document.getElementById('register')?.addEventListener('click', () => showMenu('register'));
             }
-            break;
+        break;
 
-        case 'paused': // Pause Menu (Now includes Logout)
+        case 'leaderboard':
             menu.innerHTML = `
-                <h1>Paused</h1>
-                <button id="resumeGame">Resume</button>
-                <button id="resetGame">Restart</button>
-                <button id="leaderboard">Leaderboard</button>
-                <button id="logout">Logout</button>
+                <h1>Leaderboard</h1>
+                <button id="back-to-menu">Back to Menu</button>
+                <div id="leaderboard"></div>
             `;
-            document.body.appendChild(menu);
-            document.getElementById('resumeGame').addEventListener('click', resumeGame);
-            document.getElementById('resetGame').addEventListener('click', resetGame);
-            document.getElementById('leaderboard').addEventListener('click', () => {
-                window.location.href = './leaderboard.html';
-            });
-            document.getElementById('logout').addEventListener('click', () => {
-                localStorage.clear();
-                window.location.href = './login.html';
-            });
-            break;
 
-        case 'gameOver': // Game Over Menu
-            menu.innerHTML = `
-                <h1>Game Over</h1>
-                <button id="resetGame">Restart</button>
-                <button id="leaderboard">Leaderboard</button>
-                <button id="logout">Logout</button>
-            `;
             document.body.appendChild(menu);
-            document.getElementById('resetGame').addEventListener('click', resetGame);
-            document.getElementById('leaderboard').addEventListener('click', () => {
-                window.location.href = './leaderboard.html';
+
+            document.getElementById('back-to-menu')?.addEventListener('click', () => showMenu('menu'));
+
+            getLeaderboard().then(leaderboardData => {
+                const leaderboardList = document.getElementById('leaderboard');
+                leaderboardList.innerHTML = '';
+
+                leaderboardData.forEach((user, index) => {
+                    const listItem = document.createElement('span');
+                    listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
+                    leaderboardList.appendChild(listItem);
+                });
             });
-            document.getElementById('logout').addEventListener('click', () => {
-                localStorage.clear();
-                window.location.href = './login.html';
+        break;
+
+        case 'login':
+            menu.innerHTML = `
+                <h1>Login</h1>
+                <input type="text" id="username" placeholder="Username" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button id="login-btn">Login</button>
+                <p id="status"></p>
+                <p>Don't have an account? <button id="go-to-register">Register</button></p>
+            `;
+
+            document.body.appendChild(menu);
+
+            document.getElementById('login-btn')?.addEventListener('click', async () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const status = document.getElementById('status');
+
+                if (!username || !password) {
+                    status.textContent = 'Please enter a username and password.';
+                    return;
+                }
+
+                const user = await loginUser(username, password);
+
+                if (user) {
+                    localStorage.setItem('userId', user.id);
+                    localStorage.setItem('username', user.username);
+                    localStorage.setItem('highscore', user.highscore);
+                    window.location.reload();
+                    // showMenu('menu');
+                } else {
+                    status.textContent = 'Login failed. Check username and password.';
+                }
             });
-            break;
+
+            document.getElementById('go-to-register')?.addEventListener('click', () => showMenu('register'));
+        break;
+
+        case 'register':
+            menu.innerHTML = `
+                <h1>Register</h1>
+                <input type="text" id="username" placeholder="Username" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button id="register-btn">Register</button>
+                <p id="status"></p>
+                <p>Already have an account? <button id="go-to-login">Login</button></p>
+            `;
+
+            document.body.appendChild(menu);
+
+            document.getElementById('register-btn')?.addEventListener('click', async () => {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const status = document.getElementById('status');
+
+                if (!username || !password) {
+                    status.textContent = 'Please enter a username and password.';
+                    return;
+                }
+
+                const user = await registerUser(username, password);
+
+                if (user) {
+                    status.textContent = 'Registration successful! Redirecting to login...';
+                    setTimeout(() => showMenu('login'), 2000);
+                } else {
+                    status.textContent = 'Registration failed. Check console for details.';
+                }
+            });
+
+            document.getElementById('go-to-login')?.addEventListener('click', () => showMenu('login'));
+        break;
     }
 }
+

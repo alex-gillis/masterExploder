@@ -16,7 +16,6 @@ const username = localStorage.getItem('username');
 
 if (!userId) {
     console.warn('No user found in localStorage. Redirecting to login...');
-    window.location.href = './login.html';
 } else {
     console.log('User authenticated:', { userId, username });
 }
@@ -143,11 +142,13 @@ await loadUserProgress();
 async function handleGameOver() {
     await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
-    await updateUserWaveData(userId, 1, 3, 0, 3);
+    // await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
+    updateUserWaveData(userId, 1, 3, 0, 3);
+    gameState = 'pause';
 }
 
 function resetGame() {
-    updateUserWaveData(userId, 1, 3, 0);
+    updateUserWaveData(userId, 1, 3, 0, 3);
     window.location.reload();
 }
 
@@ -169,6 +170,12 @@ function moveShip() {
     if (keys['w']) ship.position.y += moveSpeed * 0.5;
     ship.position.x = THREE.MathUtils.clamp(ship.position.x, -10, 10);
     ship.position.y = THREE.MathUtils.clamp(ship.position.y, -10, 10);
+    
+    
+    if (keys['p']) {
+        gameState = "paused"
+        showMenu('paused', startGame, resetGame, resumeGame);
+    }
 }
 
 // Declare lastFired globally
@@ -216,6 +223,9 @@ function animate() {
         enemiesRemaining
     );
     
+    if (health.value >= 1) {
+        updateUserProgress()
+    }
 
     checkWaveCompletion(scene);
     renderer.render(scene, camera);
