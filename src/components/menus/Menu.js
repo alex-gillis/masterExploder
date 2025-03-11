@@ -51,6 +51,26 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
             }
         break;
 
+        case 'paused': // Pause Menu (Now includes Logout)
+            menu.innerHTML = `
+                <h1>Paused</h1>
+                <button id="resumeGame">Resume</button>
+                <button id="resetGame">Restart</button>
+                <button id="leaderboard">Leaderboard</button>
+                <button id="logout">Logout</button>
+            `;
+            document.body.appendChild(menu);
+            document.getElementById('resumeGame').addEventListener('click', resumeGame);
+            document.getElementById('resetGame').addEventListener('click', resetGame);
+            document.getElementById('leaderboard').addEventListener('click', () => {
+                window.location.href = './leaderboard.html';
+            });
+            document.getElementById('logout').addEventListener('click', () => {
+                localStorage.clear();
+                window.location.href = './login.html';
+            });
+        break;
+
         case 'leaderboard':
             menu.innerHTML = `
                 <h1>Leaderboard</h1>
