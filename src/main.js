@@ -147,12 +147,12 @@ async function handleGameOver() {
     gameState = 'pause';
 }
 
-function resetGame() {
+async function resetGame() {
     waveNumber = 1;
     enemiesRemaining.value = 3;
     score.value = 0;
     health.value = 3;
-    updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
+    await updateUserWaveData(userId, 1, 3, 0, 3);
     window.location.reload();
 }
 
@@ -180,7 +180,7 @@ function moveShip() {
         showMenu('paused', startGame, resetGame, resumeGame);
         gameState = "paused"
     }
-    if (keys['esc']) {
+    if (keys['escape']) {
         showMenu('paused', startGame, resetGame, resumeGame);
         gameState = "paused"
     }
@@ -231,7 +231,7 @@ function animate() {
         enemiesRemaining
     );
     
-    if (health.value >= 1) {
+    if (health.value >= 1 && gameState == 'playing') {
         updateUserProgress()
     }
 
