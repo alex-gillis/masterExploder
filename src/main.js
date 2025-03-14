@@ -59,15 +59,6 @@ showMenu('menu', startGame, resetGame, resumeGame);
 animate();
 camera.position.z = 10;
 
-// Resume Game
-function resumeGame() {
-    if (gameState === 'paused') {
-        gameState = 'playing';
-        document.getElementById('menu')?.remove(); // Remove menu if exists
-        animate(); // Restart the game loop
-    }
-}
-
 // Declare Global Variables
 let waveNumber = 0; 
 let enemiesRemaining = { value: 0 };
@@ -138,13 +129,20 @@ function checkWaveCompletion(myScene) {
 // Call `loadUserProgress()` when the game starts
 await loadUserProgress();
 
-// Game Over Handling
 async function handleGameOver() {
     await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
     // await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
     // updateUserWaveData(userId, 1, 3, 0, 3);
     gameState = 'pause';
+}
+
+function resumeGame() {
+    if (gameState === 'paused') {
+        gameState = 'playing';
+        document.getElementById('menu')?.remove(); // Remove menu if exists
+        animate(); // Restart the game loop
+    }
 }
 
 async function resetGame() {
@@ -176,17 +174,14 @@ function moveShip() {
     ship.position.y = THREE.MathUtils.clamp(ship.position.y, -10, 10);
     
     // pause game
-    if (keys['p']) {
-        showMenu('paused', startGame, resetGame, resumeGame);
-        gameState = "paused"
-    }
-    if (keys['escape']) {
+    if (keys['p'] || keys['escape']) {
         showMenu('paused', startGame, resetGame, resumeGame);
         gameState = "paused"
     }
 }
 
-// Declare lastFired globally
+const laserSound = new Audio('../assets/sounds/ship-laser.mp3');
+laserSound.volume = 0.3; 
 let lastFired = 0;
 
 // Shoot Bullets
@@ -195,7 +190,9 @@ window.addEventListener('keydown', (event) => {
         const currentTime = Date.now();
         if (currentTime - lastFired >= fireRate) {
             shootBullet(scene, bullets, ship, DEBUG_MODE);
-            lastFired = currentTime; //  Update lastFired to prevent spamming
+            laserSound.currentTime = 0; 
+            laserSound.play(); 
+            lastFired = currentTime;
         }
     }
 });
@@ -242,7 +239,7 @@ function animate() {
 let animationFrameId;
 
 // Start Game
-function startGame() {
+async function startGame() {
     gameState = 'playing';
     document.getElementById('menu').remove();
     spawnWave(scene);
