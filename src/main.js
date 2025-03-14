@@ -162,14 +162,10 @@ window.addEventListener('keyup', (event) => { keys[event.key.toLowerCase()] = fa
 
 // Move Ship Function
 function moveShip() {
-    if (keys['ArrowLeft']) ship.position.x -= moveSpeed;
-    if (keys['ArrowRight']) ship.position.x += moveSpeed;
-    if (keys['ArrowDown']) ship.position.y -= moveSpeed * 0.5;
-    if (keys['ArrowUp']) ship.position.y += moveSpeed * 0.5;
-    if (keys['a']) ship.position.x -= moveSpeed;
-    if (keys['d']) ship.position.x += moveSpeed;
-    if (keys['s']) ship.position.y -= moveSpeed * 0.5;
-    if (keys['w']) ship.position.y += moveSpeed * 0.5;
+    if (keys['ArrowLeft'] || keys['a']) ship.position.x -= moveSpeed;
+    if (keys['ArrowRight'] || keys['d']) ship.position.x += moveSpeed;
+    if (keys['ArrowDown'] || keys['s']) ship.position.y -= moveSpeed * 0.5;
+    if (keys['ArrowUp'] || keys['w']) ship.position.y += moveSpeed * 0.5;
     ship.position.x = THREE.MathUtils.clamp(ship.position.x, -10, 10);
     ship.position.y = THREE.MathUtils.clamp(ship.position.y, -10, 10);
     
