@@ -234,8 +234,15 @@ function animate() {
 
 let animationFrameId;
 
+const backgroundMusic = new Audio('./assets/sounds/theme.mp3');
+backgroundMusic.volume = 0.5; // Adjust volume as needed
+backgroundMusic.loop = true;
+
 // Start Game
 async function startGame() {
+    if (backgroundMusic.paused) {
+        backgroundMusic.play();
+    }
     gameState = 'playing';
     document.getElementById('menu').remove();
     spawnWave(scene);
