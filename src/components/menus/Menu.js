@@ -4,7 +4,7 @@ import { registerUser } from '../../backend/Users/Register.js';
 // import { loginWithAuth0, logout, getUser } from '../../functions/auth.js';
 
 
-export function showMenu(state, startGame, resetGame, resumeGame) {
+export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, muteSound) {
     const existingMenu = document.getElementById('menu');
     if (existingMenu) existingMenu.remove();
 
@@ -30,7 +30,9 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
             if (userId) {
                 menu.innerHTML += `
                     <button id="startGame">Start Game</button>
+                    <br/>
                     <button id="leaderboard">Leaderboard</button>
+                    <br/>
                     <button id="logout">Logout</button>
                 `;
             } else {
@@ -60,20 +62,17 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
                 <h1>Master Exploder</h1>
                 <h3>Paused</h3>
                 <button id="resumeGame">Resume</button>
+                <br/>
+                <button id="music">Mute Music</button>
+                <button id="sound">Mute Sound</button>
+                <br/>
                 <button id="resetGame">Restart</button>
-                <button id="leaderboard">Leaderboard</button>
-                <button id="logout">Logout</button>
             `;
             document.body.appendChild(menu);
             document.getElementById('resumeGame').addEventListener('click', resumeGame);
             document.getElementById('resetGame').addEventListener('click', resetGame);
-            document.getElementById('leaderboard').addEventListener('click', () => {
-                window.location.href = './leaderboard.html';
-            });
-            document.getElementById('logout').addEventListener('click', () => {
-                localStorage.clear();
-                window.location.href = './login.html';
-            });
+            document.getElementById('music').addEventListener('click', muteMusic);
+            document.getElementById('sound').addEventListener('click', muteSound);
         break;
 
         case 'leaderboard':

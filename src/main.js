@@ -35,6 +35,42 @@ const enemyBullets = [];
 const targets = [];
 const keys = {}; 
 
+const backgroundMusic = new Audio('./assets/sounds/theme.mp3');
+const laserSound = new Audio('../assets/sounds/ship-laser.mp3');
+const playerDeath = new Audio('../assets/sounds/gameover-explosion.mp3');
+const enemyDeath = new Audio('../assets/sounds/enemy-explode.mp3');
+
+backgroundMusic.volume = 0.15;
+laserSound.volume = 0.1; 
+playerDeath.volume = 1; 
+enemyDeath.volume = 0.3; 
+
+backgroundMusic.loop = true;
+
+function muteMusic() {
+    if (backgroundMusic.volume === 0) { backgroundMusic.volume = 0.2; } 
+    else { backgroundMusic.volume = 0; }
+}
+
+function muteSound() {
+    if (laserSound.volume === 0) { laserSound.volume = 0.1; } 
+    else { laserSound.volume = 0; }
+    
+    if (playerDeath.volume === 0) { playerDeath.volume = 1; } 
+    else { playerDeath.volume = 0; }
+    
+    if (enemyDeath.volume === 0) { enemyDeath.volume = 0.3; } 
+    else { enemyDeath.volume = 0; }
+}
+
+function playEnemyDeath() {
+    if (enemyDeath.volume !== 0) {
+        const clone = enemyDeath.cloneNode(true);
+        clone.volume = enemyDeath.volume;
+        clone.play();
+    }
+}
+
 // Initialize HUD
 const { scoreElement, healthElement, waveElement } = createHUD();
 let score = { value: 0 }; 
@@ -46,15 +82,13 @@ let gameState = 'menu';
 let fireRate = 300;
 let moveSpeed = 0.1;
 let lastHitTime = 0; 
+let lastFired = 0;
 
 // Create Ship & Targets
 const ship = createShip(scene);
-// createTarget(scene, targets, new THREE.Vector3(2, 2, 0), DEBUG_MODE, 'oscillate');
-// createTarget(scene, targets, new THREE.Vector3(-2, 0, 0), DEBUG_MODE, 'zigzag');
-// createTarget(scene, targets, new THREE.Vector3(0, 5 , 0), DEBUG_MODE, 'circular');
 
 // Show Main Menu
-showMenu('menu', startGame, resetGame, resumeGame);
+showMenu('menu', startGame, resetGame, resumeGame, muteMusic, muteSound);
 animate();
 camera.position.z = 10;
 
@@ -129,11 +163,10 @@ function checkWaveCompletion(myScene) {
 await loadUserProgress();
 
 async function handleGameOver() {
+    playerDeath.play();
     await gameOver(score.value, resetGame, gameRunning, userId);
     gameState = 'pause';
     await updateHighScore(userId, score.value);
-    // await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
-    // updateUserWaveData(userId, 1, 3, 0, 3);
 }
 
 function resumeGame() {
@@ -170,14 +203,10 @@ function moveShip() {
     
     // pause game
     if (keys['p'] || keys['escape']) {
-        showMenu('paused', startGame, resetGame, resumeGame);
+        showMenu('paused', startGame, resetGame, resumeGame, muteMusic, muteSound);
         gameState = "paused"
     }
 }
-
-const laserSound = new Audio('../assets/sounds/ship-laser.mp3');
-laserSound.volume = 0.3; 
-let lastFired = 0;
 
 // Shoot Bullets
 window.addEventListener('keydown', (event) => {
@@ -220,7 +249,8 @@ function animate() {
         spawnWave,
         waveNumber,
         waveActive,
-        enemiesRemaining
+        enemiesRemaining, 
+        playEnemyDeath
     );
 
     checkWaveCompletion(scene);
@@ -233,10 +263,6 @@ function animate() {
 }
 
 let animationFrameId;
-
-const backgroundMusic = new Audio('./assets/sounds/theme.mp3');
-backgroundMusic.volume = 0.5; // Adjust volume as needed
-backgroundMusic.loop = true;
 
 // Start Game
 async function startGame() {

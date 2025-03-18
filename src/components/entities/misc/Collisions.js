@@ -19,7 +19,8 @@ export function checkCollisions(
     spawnWave,
     waveNumber,
     waveActive,
-    enemiesRemaining
+    enemiesRemaining,
+    enemyDeath
 ) {
     bullets.forEach((bulletObj, bulletIndex) => {
         if (!bulletObj || !bulletObj.bullet) return;
@@ -37,6 +38,9 @@ export function checkCollisions(
 
             if (bulletBoundingBox.intersectsBox(targetBoundingBox)) {
                 // console.log('Collision detected: Bullet hit target.');
+
+                // Play explosion sound
+                enemyDeath();
 
                 // Remove bullet
                 scene.remove(bullet);
