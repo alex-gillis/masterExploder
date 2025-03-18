@@ -45,7 +45,6 @@ let gameState = 'menu';
 // Ship Stats
 let fireRate = 300;
 let moveSpeed = 0.1;
-
 let lastHitTime = 0; 
 
 // Create Ship & Targets
@@ -130,11 +129,11 @@ function checkWaveCompletion(myScene) {
 await loadUserProgress();
 
 async function handleGameOver() {
-    await updateHighScore(userId, score.value);
     await gameOver(score.value, resetGame, gameRunning, userId);
+    gameState = 'pause';
+    await updateHighScore(userId, score.value);
     // await updateUserWaveData(userId, waveNumber, enemiesRemaining.value, score.value, health.value);
     // updateUserWaveData(userId, 1, 3, 0, 3);
-    gameState = 'pause';
 }
 
 function resumeGame() {
@@ -223,12 +222,13 @@ function animate() {
         waveActive,
         enemiesRemaining
     );
+
+    checkWaveCompletion(scene);
     
     if (health.value >= 1 && gameState == 'playing') {
         updateUserProgress()
     }
 
-    checkWaveCompletion(scene);
     renderer.render(scene, camera);
 }
 

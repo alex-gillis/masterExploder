@@ -1,6 +1,7 @@
 import { getLeaderboard } from '../../backend/Leaderboard/Retrieve.js';
 import { loginUser } from '../../backend/Users/Login.js';
 import { registerUser } from '../../backend/Users/Register.js';
+// import { loginWithAuth0, logout, getUser } from '../../functions/auth.js';
 
 
 export function showMenu(state, startGame, resetGame, resumeGame) {
@@ -21,7 +22,10 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
 
     switch (state) {
         case 'menu':
-            menu.innerHTML = `<h1>Main Menu</h1>`;
+            menu.innerHTML = `
+            <h1>Master Exploder</h1>
+            <h3>Main Menu</h3>
+            `;
 
             if (userId) {
                 menu.innerHTML += `
@@ -53,7 +57,8 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
 
         case 'paused': // Pause Menu (Now includes Logout)
             menu.innerHTML = `
-                <h1>Paused</h1>
+                <h1>Master Exploder</h1>
+                <h3>Paused</h3>
                 <button id="resumeGame">Resume</button>
                 <button id="resetGame">Restart</button>
                 <button id="leaderboard">Leaderboard</button>
@@ -73,7 +78,8 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
 
         case 'leaderboard':
             menu.innerHTML = `
-                <h1>Leaderboard</h1>
+                <h1>Master Exploder</h1>
+                <h3>Leaderboard</h3>
                 <button id="back-to-menu">Back to Menu</button>
                 <div id="leaderboard"></div>
             `;
@@ -96,7 +102,8 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
 
         case 'login':
             menu.innerHTML = `
-                <h1>Login</h1>
+                <h1>Master Exploder</h1>
+                <h3>Login</h3>
                 <input type="text" id="username" placeholder="Username" required />
                 <input type="password" id="password" placeholder="Password" required />
                 <button id="login-btn">Login</button>
@@ -134,7 +141,8 @@ export function showMenu(state, startGame, resetGame, resumeGame) {
 
         case 'register':
             menu.innerHTML = `
-                <h1>Register</h1>
+                <h1>Master Exploder</h1>
+                <h3>Register</h3>
                 <input type="text" id="username" placeholder="Username" required />
                 <input type="password" id="password" placeholder="Password" required />
                 <button id="register-btn">Register</button>

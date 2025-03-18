@@ -5,16 +5,15 @@ export async function gameOver(score, resetGame, gameRunningRef, userId) {
 
     if (!userId) {
         console.error('User ID is missing. Cannot save high score.');
-        return;
     }
 
-    try {
-        // Update high score if applicable
-        await updateHighScore(userId, score);
-    } catch (error) {
-        console.error('Error updating high score:', error.message);
-        return;
-    }
+    // try {
+    //     // Update high score if applicable
+    //     await updateHighScore(userId, score);
+    // } catch (error) {
+    //     console.error('Error updating high score:', error.message);
+    //     return;
+    // }
 
     // Display the Game Over Menu
     const gameOverScreen = document.createElement('div');
@@ -29,16 +28,11 @@ export async function gameOver(score, resetGame, gameRunningRef, userId) {
     gameOverScreen.innerHTML = `
         <h1>Game Over</h1>
         <p>Score: ${score}</p>
-        <button id="restart">Restart</button>
-        <button id="leaderboard">View Leaderboard</button>
+        <button id="main-menu">Return to Menu</button>
     `;
     document.body.appendChild(gameOverScreen);
 
-    document.getElementById('restart').addEventListener('click', () => {
+    document.getElementById('main-menu').addEventListener('click', () => {
         resetGame();
-    });
-
-    document.getElementById('leaderboard').addEventListener('click', () => {
-        window.location.href = './leaderboard.html';
     });
 }

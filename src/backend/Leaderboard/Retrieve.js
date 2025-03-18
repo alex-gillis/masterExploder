@@ -10,7 +10,7 @@ export async function getLeaderboard() {
             .order('highscore', { ascending: false })
             .limit(10);
 
-        console.log('Database response:', data); // Debugging output
+        console.log('Database response:', data); 
 
         if (error) throw error;
         return data || [];
