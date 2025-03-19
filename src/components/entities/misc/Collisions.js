@@ -87,6 +87,9 @@ export function checkCollisions(
             // Add hit cooldown (500ms)
             if (currentTime - lastHitTime >= 500) {
                 console.log('Player hit by an enemy!');
+                
+                // Play explosion sound
+                enemyDeath();
 
                 // Remove enemy from scene
                 target.onDestroy();

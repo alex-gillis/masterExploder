@@ -67,12 +67,15 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
                 <button id="sound">Mute Sound</button>
                 <br/>
                 <button id="resetGame">Restart</button>
+                <br/>
+                <button id="back-to-menu">Back to Menu</button>
             `;
             document.body.appendChild(menu);
             document.getElementById('resumeGame').addEventListener('click', resumeGame);
             document.getElementById('resetGame').addEventListener('click', resetGame);
             document.getElementById('music').addEventListener('click', muteMusic);
             document.getElementById('sound').addEventListener('click', muteSound);
+            document.getElementById('back-to-menu')?.addEventListener('click', () => window.location.reload());
         break;
 
         case 'leaderboard':
