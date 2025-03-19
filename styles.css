@@ -3,6 +3,14 @@ body {
     color: silver;
 }
 
+h1 {
+    margin-bottom: 7.5px;
+}
+
+h3 {
+    margin-top: 7.5px;
+}
+
 button {
     width: 100px;
 }

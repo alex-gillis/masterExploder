@@ -272,5 +272,5 @@ async function startGame() {
     gameState = 'playing';
     document.getElementById('menu').remove();
     spawnWave(scene);
-    animate();
+    await animate();
 }
