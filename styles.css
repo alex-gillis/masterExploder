@@ -3,7 +3,9 @@ body {
     color: silver;
 }
 
-
+button {
+    width: 100px;
+}
 
 #menu-buttons {
     position: absolute;
