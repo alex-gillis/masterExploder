@@ -47,30 +47,6 @@ enemyDeath.volume = 0.3;
 
 backgroundMusic.loop = true;
 
-function muteMusic() {
-    if (backgroundMusic.volume === 0) { backgroundMusic.volume = 0.2; } 
-    else { backgroundMusic.volume = 0; }
-}
-
-function muteSound() {
-    if (laserSound.volume === 0) { laserSound.volume = 0.1; } 
-    else { laserSound.volume = 0; }
-    
-    if (playerDeath.volume === 0) { playerDeath.volume = 1; } 
-    else { playerDeath.volume = 0; }
-    
-    if (enemyDeath.volume === 0) { enemyDeath.volume = 0.3; } 
-    else { enemyDeath.volume = 0; }
-}
-
-function playEnemyDeath() {
-    if (enemyDeath.volume !== 0) {
-        const clone = enemyDeath.cloneNode(true);
-        clone.volume = enemyDeath.volume;
-        clone.play();
-    }
-}
-
 // Initialize HUD
 const { scoreElement, healthElement, waveElement } = createHUD();
 let score = { value: 0 }; 
@@ -174,6 +150,30 @@ function resumeGame() {
         gameState = 'playing';
         document.getElementById('menu')?.remove(); // Remove menu if exists
         animate(); // Restart the game loop
+    }
+}
+
+function muteMusic() {
+    if (backgroundMusic.volume === 0) { backgroundMusic.volume = 0.2; } 
+    else { backgroundMusic.volume = 0; }
+}
+
+function muteSound() {
+    if (laserSound.volume === 0) { laserSound.volume = 0.1; } 
+    else { laserSound.volume = 0; }
+    
+    if (playerDeath.volume === 0) { playerDeath.volume = 1; } 
+    else { playerDeath.volume = 0; }
+    
+    if (enemyDeath.volume === 0) { enemyDeath.volume = 0.3; } 
+    else { enemyDeath.volume = 0; }
+}
+
+function playEnemyDeath() {
+    if (enemyDeath.volume !== 0) {
+        const clone = enemyDeath.cloneNode(true);
+        clone.volume = enemyDeath.volume;
+        clone.play();
     }
 }
 
