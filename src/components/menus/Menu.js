@@ -3,7 +3,6 @@ import { loginUser } from '../../backend/Users/Login.js';
 import { registerUser } from '../../backend/Users/Register.js';
 // import { loginWithAuth0, logout, getUser } from '../../functions/auth.js';
 
-
 export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, muteSound) {
     const existingMenu = document.getElementById('menu');
     if (existingMenu) existingMenu.remove();

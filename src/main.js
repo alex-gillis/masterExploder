@@ -9,13 +9,15 @@ import { checkCollisions } from './components/entities/misc/Collisions.js';
 import { updateHighScore } from './backend/Leaderboard/Update.js';
 import { getUserWaveData } from './backend/Waves/Retrieve.js';
 import { updateUserWaveData } from './backend/Waves/Update.js';
+import { getUser } from './functions/auth.js';
+import { upsertCustomUser } from './backend/Users/Upsert.js';
 
 // Check if user is logged in
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
 
 if (!userId) {
-    console.warn('No user found in localStorage. Redirecting to login...');
+    console.log('No user found in localStorage.');
 } else {
     console.log('User authenticated:', { userId, username });
 }
@@ -73,6 +75,19 @@ let waveNumber = 0;
 let enemiesRemaining = { value: 0 };
 let waveActive = false; 
 let startUp = true;
+
+async function initAuth() {
+    const user = await getUser();
+    if (!user) {
+        console.warn('No authenticated user found.');
+        //   showMenu('login', startGame, resetGame, resumeGame, muteMusic, muteSound);
+    } else {
+        await upsertCustomUser(user);
+        console.log('User row upserted.');
+    }
+}
+
+await initAuth();
 
 // Retrieve user progress when they log in
 async function loadUserProgress() {
