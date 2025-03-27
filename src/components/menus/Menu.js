@@ -1,6 +1,7 @@
 import { getLeaderboard } from '../../backend/Leaderboard/Retrieve.js';
 import { loginUser } from '../../backend/Users/Login.js';
 import { registerUser } from '../../backend/Users/Register.js';
+import { loginWithGooglePopup } from '../../functions/auth.js';
 // import { loginWithAuth0, logout, getUser } from '../../functions/auth.js';
 
 export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, muteSound) {
@@ -38,6 +39,10 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
                 menu.innerHTML += `
                     <button id="login">Login</button>
                     <button id="register">Register</button>
+                    <br/>
+                    <br/>
+                    <button id="googlelogin">Login with Google</button>
+                    <button id="googleregister">Register with Google</button>
                 `;
             }
 
@@ -53,6 +58,14 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
             } else {
                 document.getElementById('login')?.addEventListener('click', () => showMenu('login'));
                 document.getElementById('register')?.addEventListener('click', () => showMenu('register'));
+                document.getElementById('googlelogin')?.addEventListener('click', async () => {
+                    await loginWithGooglePopup();
+                });
+                document.getElementById('googleregister')?.addEventListener('click', async () => {
+                    // For many OAuth providers, login and register are the same flow.
+                    // You might call the same function.
+                    await loginWithGooglePopup();
+                });
             }
         break;
 
@@ -145,6 +158,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
                 <h1>Master Exploder</h1>
                 <h3>Register</h3>
                 <input type="text" id="username" placeholder="Username" required />
+                <input type="text" id="email" placeholder="Email" required />
                 <input type="password" id="password" placeholder="Password" required />
                 <button id="register-btn">Register</button>
                 <p id="status"></p>
@@ -155,15 +169,16 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
 
             document.getElementById('register-btn')?.addEventListener('click', async () => {
                 const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const status = document.getElementById('status');
 
-                if (!username || !password) {
-                    status.textContent = 'Please enter a username and password.';
+                if (!username || !email || !password) {
+                    status.textContent = 'Please enter a username, email and password.';
                     return;
                 }
 
-                const user = await registerUser(username, password);
+                const user = await registerUser(username, email, password);
 
                 if (user) {
                     status.textContent = 'Registration successful! Redirecting to login...';

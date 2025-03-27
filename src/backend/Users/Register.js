@@ -1,7 +1,7 @@
 import { supabase } from '../Supabase.js';
 import bcrypt from 'bcryptjs';
 
-export async function registerUser(username, password) {
+export async function registerUser(username, email, password) {
     try {
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
@@ -9,7 +9,7 @@ export async function registerUser(username, password) {
         // Insert into `users` table
         const { data, error } = await supabase
             .from('users')
-            .insert([{ name: username, password: hashedPassword, highscore: 0, admin: false }])
+            .insert([{ name: username, email, password: hashedPassword, highscore: 0, admin: false }])
             .select('id')
             .single(); // Ensure we get back the `id`
 

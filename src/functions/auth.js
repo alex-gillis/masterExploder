@@ -5,6 +5,20 @@ const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+export async function loginWithGooglePopup() {
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google', // or 'auth0' if you configured Auth0 to provide Google login
+    options: { redirectTo: window.location.origin }
+  });
+  if (error) {
+    console.error('Error obtaining OAuth URL:', error);
+    return null;
+  }
+  // data.url contains the OAuth URL
+  const popup = window.open(data.url, 'OAuthPopup', 'width=500,height=600');
+  return popup;
+}
+
 export async function loginWithAuth0() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'auth0',
