@@ -6,9 +6,9 @@ export async function getLeaderboard() {
         
         const { data, error } = await supabase
             .from('users')
-            .select('name, highscore')
+            .select('id, name, highscore')
             .order('highscore', { ascending: false })
-            .limit(10);
+            // .limit(10);
 
         console.log('Database response:', data); 
 

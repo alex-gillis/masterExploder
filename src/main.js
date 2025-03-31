@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { createShip } from './components/entities/player/Ship.js';
 import { createTarget, animateTargets } from './components/entities/enemies/Targets.js';
 import { shootBullet, updateBullets } from './components/entities/misc/Bullets.js';
@@ -43,9 +44,9 @@ const playerDeath = new Audio('../assets/sounds/gameover-explosion.mp3');
 const enemyDeath = new Audio('../assets/sounds/enemy-explode.mp3');
 
 backgroundMusic.volume = 0.15;
-laserSound.volume = 0.1; 
-playerDeath.volume = 1; 
-enemyDeath.volume = 0.3; 
+let playVolume;
+
+changeSound(0.3);
 
 backgroundMusic.loop = true;
 
@@ -66,7 +67,7 @@ let lastFired = 0;
 const ship = createShip(scene);
 
 // Show Main Menu
-showMenu('menu', startGame, resetGame, resumeGame, muteMusic, muteSound);
+showMenu('menu', startGame, resetGame, resumeGame, backgroundMusic, changeSound, playVolume);
 animate();
 camera.position.z = 10;
 
@@ -80,7 +81,7 @@ async function initAuth() {
     const user = await getUser();
     if (!user) {
         console.warn('No authenticated user found.');
-        //   showMenu('login', startGame, resetGame, resumeGame, muteMusic, muteSound);
+        //   showMenu('login', startGame, resetGame, resumeGame, backgroundMusic, changeSound, playVolume);
     } else {
         await upsertCustomUser(user);
         console.log('User row upserted.');
@@ -173,15 +174,21 @@ function muteMusic() {
     else { backgroundMusic.volume = 0; }
 }
 
-function muteSound() {
-    if (laserSound.volume === 0) { laserSound.volume = 0.1; } 
-    else { laserSound.volume = 0; }
+function changeSound(value) {
+    laserSound.volume = value; 
+    playerDeath.volume = value; 
+    enemyDeath.volume = value; 
+
+    playVolume = value;
     
-    if (playerDeath.volume === 0) { playerDeath.volume = 1; } 
-    else { playerDeath.volume = 0; }
+    // if (laserSound.volume === 0) { laserSound.volume = 0.1; } 
+    // else { laserSound.volume = 0; }
     
-    if (enemyDeath.volume === 0) { enemyDeath.volume = 0.3; } 
-    else { enemyDeath.volume = 0; }
+    // if (playerDeath.volume === 0) { playerDeath.volume = 1; } 
+    // else { playerDeath.volume = 0; }
+    
+    // if (enemyDeath.volume === 0) { enemyDeath.volume = 0.3; } 
+    // else { enemyDeath.volume = 0; }
 }
 
 function playEnemyDeath() {
@@ -218,7 +225,7 @@ function moveShip() {
     
     // pause game
     if (keys['p'] || keys['escape']) {
-        showMenu('paused', startGame, resetGame, resumeGame, muteMusic, muteSound);
+        showMenu('paused', startGame, resetGame, resumeGame, backgroundMusic, changeSound, playVolume);
         gameState = "paused"
     }
 }

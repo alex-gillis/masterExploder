@@ -4,7 +4,7 @@ import { registerUser } from '../../backend/Users/Register.js';
 import { loginWithGooglePopup } from '../../functions/auth.js';
 // import { loginWithAuth0, logout, getUser } from '../../functions/auth.js';
 
-export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, muteSound) {
+export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusic, changeSound, playVolume) {
     const existingMenu = document.getElementById('menu');
     if (existingMenu) existingMenu.remove();
 
@@ -41,8 +41,8 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
                     <button id="register">Register</button>
                     <br/>
                     <br/>
-                    <button id="googlelogin">Login with Google</button>
-                    <button id="googleregister">Register with Google</button>
+                    <button id="googlelogin">Login with<br/><i class="fab fa-google"></i>oogle</button>
+                    <button id="googleregister">Register with<br/><i class="fab fa-google"></i>oogle</button>
                 `;
             }
 
@@ -75,18 +75,29 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
                 <h3>Paused</h3>
                 <button id="resumeGame">Resume</button>
                 <br/>
-                <button id="music">Mute Music</button>
-                <button id="sound">Mute Sound</button>
+                <label for="musicSlider">Music Volume</label>
+                <input type="range" id="musicSlider" min="0" max="1" step="0.01" value="${backgroundMusic.volume}">
+                <br/>
+                <label for="soundSlider">Sound Volume</label>
+                <input type="range" id="soundSlider" min="0" max="1" step="0.01" value="${playVolume}">
                 <br/>
                 <button id="resetGame">Restart</button>
                 <br/>
                 <button id="back-to-menu">Back to Menu</button>
             `;
             document.body.appendChild(menu);
+            const musicSlider = document.getElementById('musicSlider');
+            const soundSlider = document.getElementById('soundSlider');
             document.getElementById('resumeGame').addEventListener('click', resumeGame);
             document.getElementById('resetGame').addEventListener('click', resetGame);
-            document.getElementById('music').addEventListener('click', muteMusic);
-            document.getElementById('sound').addEventListener('click', muteSound);
+            musicSlider.addEventListener('input', () => {
+                backgroundMusic.volume = musicSlider.value;
+            });
+            soundSlider.addEventListener('input', () => {
+                changeSound(soundSlider.value);
+            });
+            // document.getElementById('music').addEventListener('click', muteMusic);
+            // document.getElementById('sound').addEventListener('click', muteSound);
             document.getElementById('back-to-menu')?.addEventListener('click', () => window.location.reload());
         break;
 
@@ -94,8 +105,10 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
             menu.innerHTML = `
                 <h1>Master Exploder</h1>
                 <h3>Leaderboard</h3>
-                <button id="back-to-menu">Back to Menu</button>
                 <div id="leaderboard"></div>
+                <div id="leaderboard-user"></div>
+                <br/>
+                <button id="back-to-menu">Back to Menu</button>
             `;
 
             document.body.appendChild(menu);
@@ -103,14 +116,22 @@ export function showMenu(state, startGame, resetGame, resumeGame, muteMusic, mut
             document.getElementById('back-to-menu')?.addEventListener('click', () => showMenu('menu'));
 
             getLeaderboard().then(leaderboardData => {
+                const userIndex = leaderboardData.findIndex(user => user.id === Number(userId));
+                const currentUser = leaderboardData[userIndex];
+                // console.log(currentUser.name)
+
                 const leaderboardList = document.getElementById('leaderboard');
+                const leaderboardUser = document.getElementById('leaderboard-user');
                 leaderboardList.innerHTML = '';
+                leaderboardUser.innerHTML = '';
 
                 leaderboardData.forEach((user, index) => {
                     const listItem = document.createElement('span');
                     listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
                     leaderboardList.appendChild(listItem);
                 });
+
+                leaderboardUser.textContent = `${userIndex + 1}. ${currentUser.name} - ${currentUser.highscore} points`;
             });
         break;
 
