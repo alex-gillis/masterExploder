@@ -1,16 +1,16 @@
 import { supabase } from '../Supabase.js';
 import bcrypt from 'bcryptjs';
 
-export async function loginUser(username, password) {
+export async function loginUser(email, password) {
     try {
-        console.log('Logging in with username:', username);
+        console.log('Logging in with username:', email);
 
-        // Fetch user by username
         const { data, error } = await supabase
             .from('users')
-            .select('id, name, password, highscore, admin')
-            .eq('name', username)
+            .select('id, name, email, password, highscore, admin')
+            .eq('email', email)
             .single();
+
 
         if (error || !data) {
             console.error('Login failed: User not found.');
@@ -25,7 +25,8 @@ export async function loginUser(username, password) {
         }
 
         console.log('User logged in:', data);
-        return { id: data.id, username: data.name, highscore: data.highscore, admin: data.admin };
+        return { id: data.id, username: data.name, email: data.email, highscore: data.highscore, admin: data.admin };
+
     } catch (err) {
         console.error('Login failed:', err.message);
         return null;

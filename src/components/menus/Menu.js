@@ -106,6 +106,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                 <h1>Master Exploder</h1>
                 <h3>Leaderboard</h3>
                 <div id="leaderboard"></div>
+                <br/>
                 <div id="leaderboard-user"></div>
                 <br/>
                 <button id="back-to-menu">Back to Menu</button>
@@ -113,7 +114,8 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
 
             document.body.appendChild(menu);
 
-            document.getElementById('back-to-menu')?.addEventListener('click', () => showMenu('menu'));
+            // document.getElementById('back-to-menu')?.addEventListener('click', () => showMenu('menu'));
+            document.getElementById('back-to-menu')?.addEventListener('click', () => window.location.reload());
 
             getLeaderboard().then(leaderboardData => {
                 const userIndex = leaderboardData.findIndex(user => user.id === Number(userId));
@@ -126,7 +128,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                 leaderboardUser.innerHTML = '';
 
                 leaderboardData.forEach((user, index) => {
-                    const listItem = document.createElement('span');
+                    const listItem = document.createElement('div');
                     listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
                     leaderboardList.appendChild(listItem);
                 });
@@ -139,7 +141,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
             menu.innerHTML = `
                 <h1>Master Exploder</h1>
                 <h3>Login</h3>
-                <input type="text" id="username" placeholder="Username" required />
+                <input type="text" id="email" placeholder="Email" required />
                 <input type="password" id="password" placeholder="Password" required />
                 <button id="login-btn">Login</button>
                 <p id="status"></p>
@@ -149,7 +151,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
             document.body.appendChild(menu);
 
             document.getElementById('login-btn')?.addEventListener('click', async () => {
-                const username = document.getElementById('username').value;
+                const username = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
                 const status = document.getElementById('status');
 

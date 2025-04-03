@@ -10,8 +10,25 @@ import { checkCollisions } from './components/entities/misc/Collisions.js';
 import { updateHighScore } from './backend/Leaderboard/Update.js';
 import { getUserWaveData } from './backend/Waves/Retrieve.js';
 import { updateUserWaveData } from './backend/Waves/Update.js';
-import { getUser } from './functions/auth.js';
-import { upsertCustomUser } from './backend/Users/Upsert.js';
+import { getUser, registerOAuthUser, loginOAuthUser, checkOAuthUser } from './functions/auth.js';
+// import { upsertCustomUser } from '../oldFiles/Upsert.js';
+
+// async function initAuth() {
+//     const user = await getUser();
+//     if (!user) {
+//         console.warn('No authenticated user found.');
+//     } else {
+//         if (!checkOAuthUser) {
+//             registerOAuthUser()
+//             console.log('User Registered.');
+//         } else {
+//             loginOAuthUser()
+//             console.log('User Login.');
+//         }
+//     }
+//   }
+  
+// await initAuth();
 
 // Check if user is logged in
 const userId = localStorage.getItem('userId');
@@ -77,18 +94,6 @@ let enemiesRemaining = { value: 0 };
 let waveActive = false; 
 let startUp = true;
 
-async function initAuth() {
-    const user = await getUser();
-    if (!user) {
-        console.warn('No authenticated user found.');
-        //   showMenu('login', startGame, resetGame, resumeGame, backgroundMusic, changeSound, playVolume);
-    } else {
-        await upsertCustomUser(user);
-        console.log('User row upserted.');
-    }
-}
-
-await initAuth();
 
 // Retrieve user progress when they log in
 async function loadUserProgress() {
@@ -169,10 +174,10 @@ function resumeGame() {
     }
 }
 
-function muteMusic() {
-    if (backgroundMusic.volume === 0) { backgroundMusic.volume = 0.2; } 
-    else { backgroundMusic.volume = 0; }
-}
+// function muteMusic() {
+//     if (backgroundMusic.volume === 0) { backgroundMusic.volume = 0.2; } 
+//     else { backgroundMusic.volume = 0; }
+// }
 
 function changeSound(value) {
     laserSound.volume = value; 
