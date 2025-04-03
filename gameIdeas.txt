@@ -1,0 +1,4 @@
+Ship Upgrades:
+- Emergency Quantum Shielding:
+    When hit, enemies stop moving and firing, giving the player a moment to reposition and get to safety.
+    Ends after three-five seconds or player fires again.
