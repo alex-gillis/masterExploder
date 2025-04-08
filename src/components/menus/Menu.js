@@ -31,7 +31,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                 menu.innerHTML += `
                     <button id="startGame">Start Game</button>
                     <br/>
-                    <button id="leaderboard">Leaderboard</button>
+                    <button id="goLeaderboard">Leaderboard</button>
                     <br/>
                     <button id="logout">Logout</button>
                 `;
@@ -50,7 +50,7 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
 
             if (userId) {
                 document.getElementById('startGame')?.addEventListener('click', startGame);
-                document.getElementById('leaderboard')?.addEventListener('click', () => showMenu('leaderboard'));
+                document.getElementById('goLeaderboard')?.addEventListener('click', () => showMenu('leaderboard'));
                 document.getElementById('logout')?.addEventListener('click', () => {
                     localStorage.clear();
                     showMenu('menu');
@@ -76,10 +76,10 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                 <button id="resumeGame">Resume</button>
                 <br/>
                 <label for="musicSlider">Music Volume</label>
-                <input type="range" id="musicSlider" min="0" max="1" step="0.01" value="${backgroundMusic.volume}">
+                <input type="range" id="musicSlider" min="0" max="0.3" step="0.01" value="${backgroundMusic.volume}">
                 <br/>
                 <label for="soundSlider">Sound Volume</label>
-                <input type="range" id="soundSlider" min="0" max="1" step="0.01" value="${playVolume}">
+                <input type="range" id="soundSlider" min="0" max="0.6" step="0.01" value="${playVolume}">
                 <br/>
                 <button id="resetGame">Restart</button>
                 <br/>
@@ -105,9 +105,16 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
             menu.innerHTML = `
                 <h1>Master Exploder</h1>
                 <h3>Leaderboard</h3>
-                <div id="leaderboard"></div>
-                <br/>
-                <div id="leaderboard-user"></div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Highscore</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard"></tbody>
+                </table>
                 <br/>
                 <button id="back-to-menu">Back to Menu</button>
             `;
@@ -123,17 +130,30 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                 // console.log(currentUser.name)
 
                 const leaderboardList = document.getElementById('leaderboard');
-                const leaderboardUser = document.getElementById('leaderboard-user');
+                // const leaderboardUser = document.getElementById('leaderboard-user');
                 leaderboardList.innerHTML = '';
-                leaderboardUser.innerHTML = '';
+                // leaderboardUser.innerHTML = '';
 
                 leaderboardData.forEach((user, index) => {
-                    const listItem = document.createElement('div');
-                    listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
+                    const listItem = document.createElement('tr');
+                    listItem.innerHTML = `
+                                        <td>${index + 1}</td>
+                                        <td>${user.name}</td>
+                                        <td>${user.highscore} points</td>
+                                        `;
+                    // listItem.textContent = `${index + 1}. ${user.name} - ${user.highscore} points`;
                     leaderboardList.appendChild(listItem);
                 });
 
-                leaderboardUser.textContent = `${userIndex + 1}. ${currentUser.name} - ${currentUser.highscore} points`;
+                const UserListItem = document.createElement('tr');
+                UserListItem.innerHTML = `
+                                        <td>${userIndex + 1}</td>
+                                        <td>${currentUser.name}</td>
+                                        <td>${currentUser.highscore} points</td>
+                                        `;
+
+                leaderboardList.appendChild(UserListItem);
+                // leaderboardUser.textContent = `${userIndex + 1}. ${currentUser.name} - ${currentUser.highscore} points`;
             });
         break;
 

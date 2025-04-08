@@ -31,7 +31,7 @@ renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
 
 const gameRunning = { value: true }; 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 const bullets = [];
 const enemyBullets = [];
 const targets = [];

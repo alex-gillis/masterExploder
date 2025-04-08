@@ -20,3 +20,30 @@ button {
     top: 15px;  
     right: 15px;
 }
+
+#leaderboard {
+    width: 100%; /* Makes table take up the available width */
+    border-collapse: collapse;
+}
+
+#leaderboard th, #leaderboard td {
+    text-align: center; /* Centers content */
+    padding: 10px; /* Adjust padding to your liking */
+    border-bottom: 1px solid #ccc; /* Optional for readability */
+}
+
+/* Evenly distribute column widths */
+#leaderboard th:nth-child(1),
+#leaderboard td:nth-child(1) {
+    width: 10%; /* Adjust percentage as needed */
+}
+
+#leaderboard th:nth-child(2),
+#leaderboard td:nth-child(2) {
+    width: 45%;
+}
+
+#leaderboard th:nth-child(3),
+#leaderboard td:nth-child(3) {
+    width: 45%;
+}
