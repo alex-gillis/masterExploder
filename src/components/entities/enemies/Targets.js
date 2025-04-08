@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+
 
 function oscillate(target, elapsedTime, amplitude = 2, speed = 0.5) {
     target.position.x = amplitude * Math.sin(elapsedTime * speed); 
@@ -15,6 +17,54 @@ function circular(target, elapsedTime) {
     target.position.x = target.initialX + Math.cos(elapsedTime) * radius;
     target.position.y = target.initialY + Math.sin(elapsedTime) * radius;
 }
+
+// export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining, updateUserProgress) {
+//     const loader = new FBXLoader();
+//     loader.load(
+//         '../../../../assets/entities/spaceship3.fbx', 
+//         (fbx) => {
+//             // fbx is the loaded object (typically a THREE.Group)
+//             const target = fbx;
+//             // Optionally scale it if it is too large/small:
+//             target.scale.set(0.01, 0.01, 0.01); // Adjust scale as necessary
+
+//             // Set the target’s position
+//             target.position.copy(position);
+//             target.initialX = position.x;
+//             target.initialY = position.y;
+
+//             // Choose a random movement pattern from our list
+//             target.pattern = ['oscillate', 'circular', 'zigzag'][Math.floor(Math.random() * 3)];
+//             target.isAlive = true;
+
+//             // Create a bounding box and a helper for debugging (visible only if DEBUG_MODE is true)
+//             const boundingBox = new THREE.Box3().setFromObject(target);
+//             const helper = new THREE.BoxHelper(target, 0xff0000);
+//             helper.material.visible = DEBUG_MODE;
+
+//             target.onDestroy = () => {
+//                 if (target.isAlive) {
+//                     target.isAlive = false;
+//                     if (typeof enemiesRemaining.value !== 'undefined') {
+//                         enemiesRemaining.value--;
+//                         updateUserProgress();
+//                     }
+//                 }
+//             };
+
+//             // Optional: Log the loaded object to inspect its structure
+//             console.log('Loaded target:', target);
+
+//             scene.add(target);
+//             scene.add(helper);
+//             targets.push({ target, boundingBox, helper, lastFired: null });
+//         },
+//         undefined, // onProgress callback
+//         (error) => {
+//             console.error('Error loading target model:', error);
+//         }
+//     );
+// }
 
 export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemaining, updateUserProgress) {
     const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -55,6 +105,7 @@ export function createTarget(scene, targets, position, DEBUG_MODE, enemiesRemain
 }
 
 // Animation Patterns
+
 export function animateTargets(scene, targets, enemyBullets) {
     const elapsedTime = Date.now() * 0.001;
 

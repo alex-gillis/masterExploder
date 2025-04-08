@@ -11,24 +11,6 @@ import { updateHighScore } from './backend/Leaderboard/Update.js';
 import { getUserWaveData } from './backend/Waves/Retrieve.js';
 import { updateUserWaveData } from './backend/Waves/Update.js';
 import { getUser, registerOAuthUser, loginOAuthUser, checkOAuthUser } from './functions/auth.js';
-// import { upsertCustomUser } from '../oldFiles/Upsert.js';
-
-// async function initAuth() {
-//     const user = await getUser();
-//     if (!user) {
-//         console.warn('No authenticated user found.');
-//     } else {
-//         if (!checkOAuthUser) {
-//             registerOAuthUser()
-//             console.log('User Registered.');
-//         } else {
-//             loginOAuthUser()
-//             console.log('User Login.');
-//         }
-//     }
-//   }
-  
-// await initAuth();
 
 // Check if user is logged in
 const userId = localStorage.getItem('userId');
@@ -42,14 +24,14 @@ if (!userId) {
 
 // Scene, Camera, Renderer Setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(115, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(115, window.innerWidth / window.innerHeight, 0.1, 100000);
 const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
 
 const gameRunning = { value: true }; 
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 const bullets = [];
 const enemyBullets = [];
 const targets = [];
