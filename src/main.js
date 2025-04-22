@@ -26,6 +26,9 @@ if (!userId) {
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(115, window.innerWidth / window.innerHeight, 0.1, 100000);
 const renderer = new THREE.WebGLRenderer();
+const colour = new THREE.Color().setHex( 0x151515 );
+
+scene.background = colour;
 
 renderer.setSize(window.innerWidth - 16, window.innerHeight - 16);
 document.body.appendChild(renderer.domElement);
