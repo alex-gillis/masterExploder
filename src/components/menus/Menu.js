@@ -113,7 +113,13 @@ export function showMenu(state, startGame, resetGame, resumeGame, backgroundMusi
                             <th>Highscore</th>
                         </tr>
                     </thead>
-                    <tbody id="leaderboard"></tbody>
+                    <tbody id="leaderboard">
+                        <tr>
+                            <th>?</th>
+                            <th>Loading</th>
+                            <th>Please Wait</th>
+                        </tr>
+                    </tbody>
                 </table>
                 <br/>
                 <button id="back-to-menu">Back to Menu</button>
